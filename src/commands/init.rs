@@ -18,7 +18,7 @@ impl Runnable for InitCmd {
 
     async fn run(&self, config: &Config) -> Result<()> {
         if config.is_loadable() {
-            log_warn!("Configuration file already exists at {:?}", &config.path);
+            log_warn!("Configuration file already exists at {:?}", config.path());
             if !confirm("Do you want to overwrite it?") {
                 bail!("Configuration init aborted.")
             }
@@ -29,17 +29,17 @@ impl Runnable for InitCmd {
         let default_cfg = include_str!("../../examples/complete.toml");
 
         fs::create_dir_all(
-            &config
-                .path
+            config
+                .path()
                 .parent()
                 .with_context(|| "Failed to initialize new configuration path.".to_string())?,
         )
         .await?;
-        fs::write(&config.path, default_cfg).await?;
+        fs::write(config.path(), default_cfg).await?;
 
         log_cute!(
             "Config created at {:?}, Review and customize it before applying.",
-            &config.path
+            config.path()
         );
 
         Ok(())

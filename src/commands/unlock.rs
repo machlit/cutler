@@ -41,7 +41,7 @@ impl Runnable for UnlockCmd {
         }
 
         document.remove("lock");
-        document.save(&config.path).await?;
+        document.save(config.path()).await?;
 
         Ok(())
     }

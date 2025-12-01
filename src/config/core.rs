@@ -69,13 +69,17 @@ pub struct Brew {
 ///
 /// This must be loaded with .load() to return a LoadedConfig, or .load_as_mut() to return a toml_edit::DocumentMut.
 pub struct Config {
-    pub path: PathBuf,
+    path: PathBuf,
 }
 
 impl Config {
     #[must_use]
     pub const fn new(path: PathBuf) -> Self {
         Self { path }
+    }
+
+    pub fn path(&self) -> &Path {
+        &self.path.as_path()
     }
 
     #[must_use]

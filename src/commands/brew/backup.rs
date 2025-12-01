@@ -143,9 +143,9 @@ impl Runnable for BrewBackupCmd {
 
         // write backup
         if dry_run {
-            log_info!("Backup would be saved to {:?}", &conf.path);
+            log_info!("Backup would be saved to {:?}", conf.path());
         } else {
-            doc.save(&conf.path).await?;
+            doc.save(conf.path()).await?;
 
             log_cute!("Done!");
         }

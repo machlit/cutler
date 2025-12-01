@@ -27,7 +27,7 @@ impl Runnable for ConfigCmd {
     async fn run(&self, config: &Config) -> Result<()> {
         // handle dry‑run
         if should_dry_run() {
-            log_dry!("Would display config from {:?}", config.path);
+            log_dry!("Would display config from {:?}", config.path());
             return Ok(());
         }
 
@@ -50,10 +50,10 @@ impl Runnable for ConfigCmd {
                 }
             };
 
-            log_info!("Executing: {} {:?}", editor_cmd, &config.path);
+            log_info!("Executing: {} {:?}", editor_cmd, config.path());
             log_cute!("Opening configuration in editor. Close editor to quit.",);
             let mut command = Command::new(program);
-            command.args(&args).arg(&config.path);
+            command.args(&args).arg(config.path());
 
             let status = command.status();
             match status {
@@ -73,7 +73,7 @@ impl Runnable for ConfigCmd {
             }
 
             // read and print the file
-            let content = fs::read_to_string(&config.path).await?;
+            let content = fs::read_to_string(config.path()).await?;
 
             println!("{content}");
         }

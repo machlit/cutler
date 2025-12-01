@@ -41,7 +41,7 @@ impl Runnable for LockCmd {
         }
 
         document["lock"] = toml_edit::value(true);
-        document.save(&config.path).await?;
+        document.save(config.path()).await?;
 
         Ok(())
     }

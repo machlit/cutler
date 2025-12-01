@@ -90,7 +90,7 @@ impl Runnable for ApplyCmd {
         }
 
         // parse + flatten domains
-        let digest = get_digest(config.path.clone())?;
+        let digest = get_digest(config.path())?;
         let domains = collect(config).await?;
 
         // load the old snapshot (if any), otherwise create a new instance

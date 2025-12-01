@@ -51,7 +51,7 @@ impl Runnable for UnapplyCmd {
             }
         };
 
-        if snapshot.digest != get_digest(config.path.clone())? {
+        if snapshot.digest != get_digest(config.path())? {
             log_warn!("Config has been modified since last application.",);
             log_warn!("Please note that only the applied modifications will be unapplied.",);
         }
