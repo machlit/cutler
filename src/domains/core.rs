@@ -16,8 +16,8 @@ pub async fn collect(config: &Config) -> Result<HashMap<String, Table>> {
 
     // If we have the config path, read the raw file to parse with toml_edit
     // This allows us to distinguish inline tables from nested tables
-    if let Ok(doc) = config.load_as_mut(false).await {
-        if let Some(Item::Table(set_table)) = doc.get("set") {
+    if let Ok(doc) = config.load_as_mut(false).await
+        && let Some(Item::Table(set_table)) = doc.get("set") {
             for (domain_key, item) in set_table {
                 if let Item::Table(domain_table) = item {
                     // Now process the domain_table, checking if values are inline tables
@@ -45,7 +45,6 @@ pub async fn collect(config: &Config) -> Result<HashMap<String, Table>> {
                 }
             }
         }
-    }
 
     Ok(out)
 }
