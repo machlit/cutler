@@ -36,7 +36,7 @@ jobs:
       - run: sccache --show-stats || true
 
       - name: Install deps before command run
-        run: cargo install cargo-audit cargo-deny
+        run: brew install cargo-audit cargo-deny
 
       - name: Generic clippy
         run: cargo clippy --no-deps -- -D warnings
