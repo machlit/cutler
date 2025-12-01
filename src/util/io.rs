@@ -7,10 +7,10 @@ use crate::{
     cli::atomic::{should_accept_all, should_dry_run, should_not_restart_services},
     log_dry, log_err, log_info, log_prompt, log_warn,
 };
-use anyhow::Result;
+use anyhow::{Context, Result};
 
 /// Ask "Y/N?"; returns true if `accept_all` is set or the user types "y" or "Y"
-#[must_use] 
+#[must_use]
 pub fn confirm(prompt: &str) -> bool {
     if should_accept_all() {
         log_prompt!("{prompt} (auto-accepted)");
@@ -29,7 +29,7 @@ pub async fn open(arg: &str) -> Result<()> {
         .arg(arg)
         .status()
         .await
-        .expect("Failed to run `open`.");
+        .with_context(|| format!("Failed to run: open {arg}"))?;
 
     Ok(())
 }

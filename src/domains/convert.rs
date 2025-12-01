@@ -63,6 +63,7 @@ pub fn prefvalue_to_toml(val: &PrefValue) -> Result<Value> {
 }
 
 /// Turns a string into its `toml::Value` counterpart.
+#[must_use] 
 pub fn string_to_toml_value(s: &str) -> toml::Value {
     // try bool, int, float, fallback to string
     if s == "true" {
@@ -79,6 +80,7 @@ pub fn string_to_toml_value(s: &str) -> toml::Value {
 }
 
 /// Normalize a `toml::Value` to a string.
+#[must_use] 
 pub fn normalize(value: &Value) -> String {
     match value {
         Value::String(s) => s.clone(),
