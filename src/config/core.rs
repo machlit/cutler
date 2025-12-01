@@ -23,7 +23,6 @@ pub struct LoadedConfig {
     pub vars: Option<HashMap<String, String>>,
     pub command: Option<HashMap<String, Command>>,
     pub brew: Option<Brew>,
-    pub mas: Option<Mas>,
     pub remote: Option<Remote>,
     #[serde(skip)]
     pub path: PathBuf,
@@ -46,13 +45,6 @@ pub struct Command {
     pub required: Option<Vec<String>>,
     pub flag: Option<bool>,
     pub sudo: Option<bool>,
-}
-
-/// Represents the [mas] table.
-#[derive(Deserialize, Debug, Clone, Default)]
-#[serde(deny_unknown_fields)]
-pub struct Mas {
-    pub ids: Vec<String>,
 }
 
 /// Represents the [brew] table.

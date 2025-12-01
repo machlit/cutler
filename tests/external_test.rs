@@ -21,7 +21,6 @@ mod tests {
             vars,
             command,
             brew: None,
-            mas: None,
             remote: None,
             path: PathBuf::new(),
         }
