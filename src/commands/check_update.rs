@@ -71,17 +71,17 @@ impl Runnable for CheckUpdateCmd {
                 } else {
                     println!(
                         r"
-                {BOLD}Update available:{RESET} {current_version} → {latest_version}
+{BOLD}Update available:{RESET} {current_version} → {latest_version}
 
-                To update, run one of the following:
+To update, run one of the following:
 
-                  brew update && brew upgrade cutler     # if installed via homebrew
-                  cargo install cutler --force           # if installed via cargo
-                  mise up cutler                         # if installed via mise
-                  cutler self-update                     # for manual installs
+    i.   brew update && brew upgrade cutler     # if installed via homebrew
+    ii.  cargo install cutler --force           # if installed via cargo
+    iii. mise up cutler                         # if installed via mise
+    iv.  cutler self-update                     # for manual installs
 
-                Or download the latest release from:
-                  https://github.com/machlit/cutler/releases"
+Or download the latest release from:
+https://github.com/machlit/cutler/releases"
                     );
                 }
             }
