@@ -29,21 +29,9 @@ jobs:
           toolchain: stable
           override: true
 
-      - name: Run sccache-cache
-        uses: mozilla-actions/sccache-action@v0.0.9
-
-      - name: sccache stats
-        run: sccache --show-stats || true
-
-      - name: Cache Cargo registry and build
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-cargo-
+      - uses: Swatinem/rust-cache@v2
+      - uses: mozilla-actions/sccache-action@v0.0.9
+      - run: sccache --show-stats || true
 
       - name: Build release artifact
         run: cargo build --release --quiet --locked
@@ -51,7 +39,7 @@ jobs:
       - name: Package release
         run: |
           mkdir -p release/bin release/man/man1
-          cp target/release/cutler release/bin/
+          cp target/aarch64-apple-darwin/release/cutler release/bin/
           cp man/man1/cutler.1 release/man/man1/
           cp LICENSE-APACHE release/
           cp LICENSE-MIT release/

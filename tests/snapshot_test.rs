@@ -3,9 +3,8 @@
 #[cfg(test)]
 mod tests {
     use cutler::{
-        config::path::get_config_path,
+        config::get_config_path,
         domains::convert::SerializablePrefValue,
-        exec::core::ExecJob,
         snapshot::{
             core::{SettingState, Snapshot},
             get_snapshot_path,
@@ -17,23 +16,18 @@ mod tests {
 
     #[tokio::test]
     async fn test_get_snapshot_path() {
-        // Test that get_snapshot_path returns .cutler_snapshot in the home directory
+        // Test that get_snapshot_path returns snapshot.json in the config parent directory
         let snapshot_path = get_snapshot_path().await.unwrap();
         assert_eq!(
             snapshot_path,
-            get_config_path()
-                .await
-                .unwrap()
-                .parent()
-                .unwrap()
-                .join("snapshot.json")
+            get_config_path().parent().unwrap().join("snapshot.json")
         );
     }
 
     #[tokio::test]
     async fn test_snapshot_basic() {
         // Test creation
-        let snapshot = Snapshot::new().await;
+        let snapshot = Snapshot::new().await.unwrap();
         assert_eq!(snapshot.settings.len(), 0);
         assert_eq!(snapshot.exec_run_count, 0);
         assert_eq!(snapshot.version, env!("CARGO_PKG_VERSION"));
@@ -50,24 +44,12 @@ mod tests {
             setting.original_value,
             Some(SerializablePrefValue::Integer(36))
         );
-
-        // Test external command state
-        let command = ExecJob {
-            name: "echo".to_string(),
-            run: "echo Hello World".to_string(),
-            sudo: false,
-            ensure_first: false,
-            flag: false,
-            required: vec!["echo".to_string()],
-        };
-        assert_eq!(command.run, "echo Hello World");
-        assert!(!command.sudo);
     }
 
     #[tokio::test]
     async fn test_snapshot_serialization() {
         // Create a comprehensive snapshot with test data
-        let mut snapshot = Snapshot::new().await;
+        let mut snapshot = Snapshot::new().await.unwrap();
 
         // Add multiple settings with different patterns
         snapshot.settings.push(SettingState {
@@ -165,7 +147,7 @@ mod tests {
         use std::collections::HashMap;
 
         // Test snapshot with complex types (arrays, dictionaries)
-        let mut snapshot = Snapshot::new().await;
+        let mut snapshot = Snapshot::new().await.unwrap();
 
         // Array type
         snapshot.settings.push(SettingState {

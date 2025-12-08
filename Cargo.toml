@@ -1,6 +1,6 @@
 [package]
 name = "cutler"
-version = "0.16.3"
+version = "0.17.0"
 edition = "2024"
 description = "Powerful, declarative settings management for your Mac, with speed."
 homepage = "https://machlit.github.io/cutler"
@@ -8,7 +8,6 @@ repository = "https://github.com/machlit/cutler"
 keywords = ["macos", "macos-automation", "cutler", "declarative-settings"]
 readme = "README.md"
 license = "MIT OR Apache-2.0"
-build = "build.rs"
 authors = ["Machlit"]
 categories = ["command-line-utilities"]
 
@@ -44,3 +43,12 @@ tempfile = "3.23.0"
 
 [workspace]
 members = [".", "xtask"]
+
+[lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
+unreachable = "deny"
+must_use_candidate = "warn"
+
+[lints.rust]
+unused_must_use = "deny"
