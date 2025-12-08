@@ -39,7 +39,7 @@ jobs:
       - name: Package release
         run: |
           mkdir -p release/bin release/man/man1
-          cp target/release/cutler release/bin/
+          cp target/aarch64-apple-darwin/release/cutler release/bin/
           cp man/man1/cutler.1 release/man/man1/
           cp LICENSE-APACHE release/
           cp LICENSE-MIT release/
