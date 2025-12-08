@@ -79,7 +79,7 @@ fn substitute(text: &str, vars: Option<HashMap<String, String>>) -> Result<Strin
             || "Failed to construct regex pattern for external cmd variable substitution.",
         )?;
 
-    // clusure to resolve variable name
+    // closure to resolve variable name
     let resolve_var = |var_name: &str| {
         vars.as_ref()
             .and_then(|map| map.get(var_name))
@@ -154,7 +154,7 @@ pub enum ExecMode {
 }
 
 /// Run all extracted external commands via `sh -c` (or `sudo sh -c`) in parallel.
-/// Returns the amount of successfully executed commmands.
+/// Returns the amount of successfully executed commands.
 pub async fn run_all(config: LoadedConfig, mode: ExecMode) -> Result<i32> {
     let cmds = extract_all_cmds(&config);
 

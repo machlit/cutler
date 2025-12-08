@@ -61,17 +61,8 @@ impl Runnable for FetchCmd {
             if local_config.vars.as_ref() != remote_config.vars.as_ref() {
                 changes.push(format!("{BOLD}vars{RESET}: (changed)"));
             }
+
             // Add more comparisons as needed for your config structure
-
-            if changes.is_empty() {
-                log_cute!("No changes found so skipping. Use -f to fetch forcefully.",);
-                return Ok(());
-            }
-            log_warn!("Differences between local and remote config:",);
-            for line in &changes {
-                log_warn!("  {line}");
-            }
-
             if changes.is_empty() {
                 log_cute!("No changes found so skipping. Use -f to fetch forcefully.",);
                 return Ok(());

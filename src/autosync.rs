@@ -45,6 +45,4 @@ pub async fn try_auto_sync(command: &crate::cli::Command, config: &Config) {
             log_info!("Skipping auto-sync since disabled in config.",);
         }
     }
-
-    // start
 }

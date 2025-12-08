@@ -90,7 +90,7 @@ impl Runnable for UnapplyCmd {
         } else {
             let mut settings_modified_count = 0;
 
-            if restore_jobs.is_empty() {
+            if !restore_jobs.is_empty() {
                 for (domain, key, value) in restore_jobs {
                     log_info!("Restoring: {domain} | {key} -> {value}",);
 

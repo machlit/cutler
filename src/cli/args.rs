@@ -117,7 +117,7 @@ pub enum BrewSubcmd {
 impl Command {
     /// Returns a trait object reference for a given command so that it can
     /// be run using the .`run()` implementation of that particular command.
-    #[must_use] 
+    #[must_use]
     pub fn as_runnable(&self) -> &dyn Runnable {
         match self {
             Self::Apply(cmd) => cmd,

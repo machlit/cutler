@@ -10,7 +10,7 @@ use crate::config::get_config_path;
 /// This is to make sure that accidental variable changes don't alter the snapshot being written.
 static SNAP_PATH: OnceLock<PathBuf> = OnceLock::new();
 
-/// Returns the path to the snapshot file ($`HOME/.cutler_snapshot`).
+/// Returns the path to the snapshot file.
 ///
 /// If for some reason the home directory cannot be detected, this function will return None.
 /// It also initializes the path once, meaning that all future calls from the first one will

@@ -70,7 +70,7 @@ impl Config {
         Self { path }
     }
 
-    #[must_use] 
+    #[must_use]
     pub fn path(&self) -> &Path {
         self.path.as_path()
     }
