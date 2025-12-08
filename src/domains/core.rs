@@ -17,34 +17,35 @@ pub async fn collect(config: &Config) -> Result<HashMap<String, Table>> {
     // If we have the config path, read the raw file to parse with toml_edit
     // This allows us to distinguish inline tables from nested tables
     if let Ok(doc) = config.load_as_mut(false).await
-        && let Some(Item::Table(set_table)) = doc.get("set") {
-            for (domain_key, item) in set_table {
-                if let Item::Table(domain_table) = item {
-                    // Now process the domain_table, checking if values are inline tables
-                    let mut settings = Table::new();
+        && let Some(Item::Table(set_table)) = doc.get("set")
+    {
+        for (domain_key, item) in set_table {
+            if let Item::Table(domain_table) = item {
+                // Now process the domain_table, checking if values are inline tables
+                let mut settings = Table::new();
 
-                    for (key, value) in domain_table {
-                        match value {
-                            Item::Value(v) => {
-                                // This could be a scalar value or an inline table
-                                settings.insert(key.to_string(), toml_edit_to_toml(v)?);
-                            }
-                            Item::Table(nested_table) => {
-                                // This is a nested table header [set.domain.nested]
-                                // Recursively process it with the prefixed domain name
-                                let nested_domain = format!("{domain_key}.{key}");
-                                collect_nested_table(&nested_domain, nested_table, &mut out)?;
-                            }
-                            _ => {}
+                for (key, value) in domain_table {
+                    match value {
+                        Item::Value(v) => {
+                            // This could be a scalar value or an inline table
+                            settings.insert(key.to_string(), toml_edit_to_toml(v)?);
                         }
+                        Item::Table(nested_table) => {
+                            // This is a nested table header [set.domain.nested]
+                            // Recursively process it with the prefixed domain name
+                            let nested_domain = format!("{domain_key}.{key}");
+                            collect_nested_table(&nested_domain, nested_table, &mut out)?;
+                        }
+                        _ => {}
                     }
+                }
 
-                    if !settings.is_empty() {
-                        out.insert(domain_key.to_string(), settings);
-                    }
+                if !settings.is_empty() {
+                    out.insert(domain_key.to_string(), settings);
                 }
             }
         }
+    }
 
     Ok(out)
 }
