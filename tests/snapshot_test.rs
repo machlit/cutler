@@ -27,7 +27,7 @@ mod tests {
     #[tokio::test]
     async fn test_snapshot_basic() {
         // Test creation
-        let snapshot = Snapshot::new().await;
+        let snapshot = Snapshot::new().await.unwrap();
         assert_eq!(snapshot.settings.len(), 0);
         assert_eq!(snapshot.exec_run_count, 0);
         assert_eq!(snapshot.version, env!("CARGO_PKG_VERSION"));
@@ -49,7 +49,7 @@ mod tests {
     #[tokio::test]
     async fn test_snapshot_serialization() {
         // Create a comprehensive snapshot with test data
-        let mut snapshot = Snapshot::new().await;
+        let mut snapshot = Snapshot::new().await.unwrap();
 
         // Add multiple settings with different patterns
         snapshot.settings.push(SettingState {
@@ -147,7 +147,7 @@ mod tests {
         use std::collections::HashMap;
 
         // Test snapshot with complex types (arrays, dictionaries)
-        let mut snapshot = Snapshot::new().await;
+        let mut snapshot = Snapshot::new().await.unwrap();
 
         // Array type
         snapshot.settings.push(SettingState {

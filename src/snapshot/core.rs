@@ -46,16 +46,16 @@ impl Snapshot {
 
     /// Creates a new snapshot.
     /// Note that the path field is decided by `get_snapshot_path()`.
-    pub async fn new() -> Self {
-        Self {
+    pub async fn new() -> Result<Self> {
+        Ok(Self {
             settings: Vec::new(),
             version: env!("CARGO_PKG_VERSION").into(),
             path: get_snapshot_path()
                 .await
-                .expect("Failed to get snapshot path."),
+                .with_context(|| "Failed to get snapshot path.".to_string())?,
             exec_run_count: 0,
             digest: String::new(),
-        }
+        })
     }
 
     /// Saves the snapshot into the designated path for the instance.
@@ -90,7 +90,7 @@ impl Snapshot {
                     let settings_only_result: Result<SettingsOnly, _> = serde_json::from_str(&txt);
                     match settings_only_result {
                         Ok(settings_only) => {
-                            let mut snap = Self::new().await;
+                            let mut snap = Self::new().await?;
                             snap.settings = settings_only.settings;
                             snap.path = path.clone();
                             Ok(snap)

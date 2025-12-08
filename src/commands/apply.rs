@@ -104,11 +104,11 @@ impl Runnable for ApplyCmd {
                     log_warn!("Bad snapshot: {e}; starting new.");
                     log_warn!("When unapplying, all your settings will reset to factory defaults.");
                     is_bad_snap = true;
-                    Snapshot::new().await
+                    Snapshot::new().await?
                 }
             }
         } else {
-            Snapshot::new().await
+            Snapshot::new().await?
         };
 
         // turn the old snapshot into a hashmap for a quick lookup
@@ -235,7 +235,7 @@ impl Runnable for ApplyCmd {
             }
         }
 
-        let mut new_snap = Snapshot::new().await;
+        let mut new_snap = Snapshot::new().await?;
         for ((_, _), old_entry) in existing {
             new_snap.settings.push(old_entry.clone());
         }
