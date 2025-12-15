@@ -14,7 +14,7 @@ env:
   RUSTC_WRAPPER: "sccache"
 
 concurrency:
-  group: "tests"
+  group: tests-ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
