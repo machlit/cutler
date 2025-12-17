@@ -7,7 +7,11 @@ use crate::{
     },
     commands::Runnable,
     config::Config,
-    domains::{collect, effective, read_current},
+    domains::{
+        collect,
+        core::{get_effective_system_domain, get_system_domains},
+        read_current,
+    },
     log_cute, log_err, log_info, log_warn,
     util::logging::{BOLD, GREEN, RED, RESET},
 };
@@ -46,10 +50,17 @@ impl Runnable for StatusCmd {
         {
             let mut outcomes = Vec::with_capacity(entries.len());
             let mut domain_has_diff = HashMap::new();
+            let system_domains = get_system_domains()?;
 
             // let the checks begin!
-            for (domain, key, value) in &entries {
-                let (eff_dom, eff_key) = effective(domain, key);
+            for (dom, key, value) in &entries {
+                let (eff_dom, eff_key) = {
+                    if system_domains.contains(dom) {
+                        (dom.clone(), key.clone())
+                    } else {
+                        get_effective_system_domain(dom, key)
+                    }
+                };
 
                 let current_pref = read_current(&eff_dom, &eff_key).await;
                 let desired_pref = crate::domains::convert::toml_to_prefvalue(value)?;

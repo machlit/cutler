@@ -9,5 +9,5 @@ casks = [
     "zulu@21",
 ]
 formulae = ["rust", "python3", "mise", "ruby", "cmatrix", "fastfetch"]
-taps = ["hitblast/tap"]
+taps = ["machlit/tap"]
 no_deps = true # Use this if you do not want cutler to check for dependencies when comparing.

@@ -62,21 +62,13 @@ NSAutomaticSpellingCorrectionEnabled = false
 [vars]                          # The [vars] table stores variables only available to the
 hostname = "darkstar"           # commands you are storing in the configuration.
 
-[command.dotfiles]
-run = """
-mkdir ~/Developer
-git clone https://github.com/hitblast/dotfiles.git ~/Developer/dotfiles
-cd ~/Developer/dotfiles
-stow . -t ~
-"""
-ensure_first = true             # ensure_first = true; These commands will run first and in
-                                # synchronous order.
 [command.hostname]
 run = """
 scutil --set ComputerName $hostname
 scutil --set HostName $hostname
 scutil --set LocalHostName $hostname
 """
+ensure_first = true             # ensure_first = true; Runs before all other commands.
 sudo = true                     # sudo = true; When you want your command to run with sudo privileges.
                                 # Please note that this is just a minor convenience feature;
                                 # regular sudo inside your actual command still works.
@@ -94,7 +86,7 @@ formulae = [
     "cmatrix",
 ]
 casks = ["aerospace", "android-studio", "appcleaner", "container", "discord"]
-taps = ["hitblast/tap", "nikitabobko/tap"]
+taps = ["machlit/tap", "nikitabobko/tap"]
 no_deps = true # Use this if you do not want cutler to check for dependencies when comparing.
 
 # Remote config example

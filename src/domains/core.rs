@@ -2,7 +2,7 @@
 
 use anyhow::Result;
 use defaults_rs::{Domain, PrefValue, Preferences};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use toml::Table;
 use toml_edit::Item;
 
@@ -82,33 +82,40 @@ fn collect_nested_table(
     Ok(())
 }
 
-/// Helper for: `effective()`
-/// Turn a config‐domain into the real defaults domain.
-///   finder            -> com.apple.finder
-///   `NSGlobalDomain`    -> `NSGlobalDomain`
-///   NSGlobalDomain.bar-> `NSGlobalDomain`
-fn get_defaults_domain(domain: &str) -> String {
-    if domain.strip_prefix("NSGlobalDomain.").is_some() {
-        // NSGlobalDomain.foo -> NSGlobalDomain
-        "NSGlobalDomain".into()
-    } else if domain == "NSGlobalDomain" {
-        domain.into()
-    } else {
-        // anything else gets com.apple.
-        format!("com.apple.{domain}")
-    }
+/// Returns all system domains as strings.
+pub fn get_system_domains() -> Result<HashSet<String>> {
+    let doms: HashSet<String> = Preferences::list_domains()?
+        .iter()
+        .map(|f| f.to_string())
+        .collect();
+
+    Ok(doms)
 }
 
 /// Given the TOML domain and key, figure out the true domain-key pair.
+/// As an extra argument, this function also receives the current domains list for validation.
 #[must_use]
-pub fn effective(domain: &str, key: &str) -> (String, String) {
-    let dom = get_defaults_domain(domain);
-    let k = if dom == "NSGlobalDomain" && domain.starts_with("NSGlobalDomain.") {
-        // NSGlobalDomain.foo + key  -> foo.key
-        let rest = &domain["NSGlobalDomain.".len()..];
-        format!("{rest}.{key}")
-    } else {
-        key.into()
+pub fn get_effective_system_domain(domain: &str, key: &str) -> (String, String) {
+    let dom = {
+        if domain.strip_prefix("NSGlobalDomain.").is_some() {
+            // NSGlobalDomain.foo -> NSGlobalDomain
+            "NSGlobalDomain".into()
+        } else if domain == "NSGlobalDomain" {
+            domain.into()
+        } else {
+            // anything else gets com.apple.
+            format!("com.apple.{domain}")
+        }
+    };
+
+    let k = {
+        if dom == "NSGlobalDomain" && domain.starts_with("NSGlobalDomain.") {
+            // NSGlobalDomain.foo + key  -> foo.key
+            let rest = &domain["NSGlobalDomain.".len()..];
+            format!("{rest}.{key}")
+        } else {
+            key.into()
+        }
     };
     (dom, k)
 }
