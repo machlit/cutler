@@ -56,9 +56,6 @@ fn collect_nested_table(
     table: &toml_edit::Table,
     out: &mut HashMap<String, Table>,
 ) -> Result<()> {
-    use crate::domains::convert::toml_edit_to_toml;
-    use toml_edit::Item;
-
     let mut settings = Table::new();
 
     for (key, value) in table {
@@ -83,7 +80,7 @@ fn collect_nested_table(
 }
 
 /// Returns all system domains as strings.
-pub fn get_system_domains() -> Result<HashSet<String>> {
+pub fn get_sys_domain_strings() -> Result<HashSet<String>> {
     let doms: HashSet<String> = Preferences::list_domains()?
         .iter()
         .map(|f| f.to_string())
@@ -92,10 +89,10 @@ pub fn get_system_domains() -> Result<HashSet<String>> {
     Ok(doms)
 }
 
-/// Given the TOML domain and key, figure out the true domain-key pair.
+/// Given the TOML domain and key, figure out the true domain-key pair for targeting system domains.
 /// As an extra argument, this function also receives the current domains list for validation.
 #[must_use]
-pub fn get_effective_system_domain(domain: &str, key: &str) -> (String, String) {
+pub fn get_effective_sys_domain_key(domain: &str, key: &str) -> (String, String) {
     let dom = {
         if domain.strip_prefix("NSGlobalDomain.").is_some() {
             // NSGlobalDomain.foo -> NSGlobalDomain
@@ -124,8 +121,6 @@ pub fn get_effective_system_domain(domain: &str, key: &str) -> (String, String) 
 pub async fn read_current(eff_domain: &str, eff_key: &str) -> Option<PrefValue> {
     let domain_obj = if eff_domain == "NSGlobalDomain" {
         Domain::Global
-    } else if let Some(rest) = eff_domain.strip_prefix("com.apple.") {
-        Domain::User(format!("com.apple.{rest}"))
     } else {
         Domain::User(eff_domain.to_string())
     };

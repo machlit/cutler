@@ -9,7 +9,7 @@ use crate::{
     config::Config,
     domains::{
         collect,
-        core::{get_effective_system_domain, get_system_domains},
+        core::{get_effective_sys_domain_key, get_sys_domain_strings},
         read_current,
     },
     log_cute, log_err, log_info, log_warn,
@@ -50,7 +50,7 @@ impl Runnable for StatusCmd {
         {
             let mut outcomes = Vec::with_capacity(entries.len());
             let mut domain_has_diff = HashMap::new();
-            let system_domains = get_system_domains()?;
+            let system_domains = get_sys_domain_strings()?;
 
             // let the checks begin!
             for (dom, key, value) in &entries {
@@ -58,7 +58,7 @@ impl Runnable for StatusCmd {
                     if system_domains.contains(dom) {
                         (dom.clone(), key.clone())
                     } else {
-                        get_effective_system_domain(dom, key)
+                        get_effective_sys_domain_key(dom, key)
                     }
                 };
 

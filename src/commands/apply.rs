@@ -9,7 +9,7 @@ use crate::{
     domains::{
         collect,
         convert::{prefvalue_to_serializable, toml_to_prefvalue},
-        core::{self, get_system_domains},
+        core::{self, get_sys_domain_strings},
     },
     exec::{ExecMode, run_all},
     log_cute, log_dry, log_err, log_info, log_warn,
@@ -91,7 +91,7 @@ impl Runnable for ApplyCmd {
 
         // parse + flatten domains
         let digest = get_digest(config.path())?;
-        let domains = collect(config).await?;
+        let config_system_domains = collect(config).await?;
 
         // load the old snapshot (if any), otherwise create a new instance
         let snap_path = get_snapshot_path().await?;
@@ -111,6 +111,13 @@ impl Runnable for ApplyCmd {
             Snapshot::new().await?
         };
 
+        // ---
+
+        // prepare for applying jobs
+        // this is going to be used for applying preferences and also saving them to snapshot
+        let mut jobs: Vec<PreferenceJob> = Vec::new();
+        let system_domains: HashSet<String> = get_sys_domain_strings()?;
+
         // turn the old snapshot into a hashmap for a quick lookup
         let mut existing: HashMap<_, _> = snap
             .settings
@@ -118,19 +125,10 @@ impl Runnable for ApplyCmd {
             .map(|s| ((s.domain.clone(), s.key.clone()), s))
             .collect();
 
-        let mut jobs: Vec<PreferenceJob> = Vec::new();
-        let system_domains: HashSet<String> = get_system_domains()?;
-
-        // create jobs for applying
-        for (dom, table) in domains {
+        // system-specific domains
+        for (dom, table) in config_system_domains {
             for (key, toml_value) in table {
-                let (eff_dom, eff_key) = {
-                    if system_domains.contains(&dom) {
-                        (dom.clone(), key)
-                    } else {
-                        core::get_effective_system_domain(&dom, &key)
-                    }
-                };
+                let (eff_dom, eff_key) = core::get_effective_sys_domain_key(&dom, &key);
 
                 if !self.no_dom_check
                     && eff_dom != "NSGlobalDomain"
@@ -237,12 +235,12 @@ impl Runnable for ApplyCmd {
             }
         }
 
+        // prepare snapshot (old + new)
         let mut new_snap = Snapshot::new().await?;
         for ((_, _), old_entry) in existing {
             new_snap.settings.push(old_entry.clone());
         }
 
-        // now append all the newly applied/updated settings
         for job in jobs {
             new_snap.settings.push(SettingState {
                 domain: job.domain,

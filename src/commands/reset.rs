@@ -10,11 +10,7 @@ use crate::{
     cli::atomic::should_dry_run,
     commands::Runnable,
     config::Config,
-    domains::{
-        collect,
-        core::{get_effective_system_domain, get_system_domains},
-        read_current,
-    },
+    domains::{collect, core::get_effective_sys_domain_key, read_current},
     log_cute, log_dry, log_err, log_info, log_warn,
     snapshot::{Snapshot, get_snapshot_path},
     util::io::{confirm, restart_services},
@@ -39,18 +35,11 @@ impl Runnable for ResetCmd {
             return Ok(());
         }
 
-        let config_domains = collect(config).await?;
-        let system_domains = get_system_domains()?;
+        let config_system_domains = collect(config).await?;
 
-        for (dom, table) in config_domains {
+        for (dom, table) in config_system_domains {
             for (key, _) in table {
-                let (eff_dom, eff_key) = {
-                    if system_domains.contains(&dom) {
-                        (dom.clone(), key)
-                    } else {
-                        get_effective_system_domain(&dom, &key)
-                    }
-                };
+                let (eff_dom, eff_key) = get_effective_sys_domain_key(&dom, &key);
 
                 // only delete it if currently set
                 if read_current(&eff_dom, &eff_key).await.is_some() {

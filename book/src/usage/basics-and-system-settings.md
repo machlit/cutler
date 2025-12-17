@@ -29,15 +29,6 @@ $ defaults write com.apple.dock "tilesize" -int "46"
 $ defaults write com.apple.menuextra.clock "FlashDateSeparators" -bool true
 ```
 
-## App Preferences
-
-If you want to save a preference for an app, you can use an identical structure but with the full domain name of the application instead of the shorthands:
-
-```toml
-[set.bobko.aerospace]  # registered to AeroSpace (bobko.aerospace)
-test = false
-```
-
 ## Global Preferences
 
 You can also configure global preferences like this:
