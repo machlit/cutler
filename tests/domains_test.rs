@@ -3,7 +3,8 @@
 #[cfg(test)]
 mod tests {
     use cutler::config::Config;
-    use cutler::domains::{collect, effective};
+    use cutler::domains::collect;
+    use cutler::domains::core::get_effective_system_domain;
     use std::io::Write;
     use tempfile::NamedTempFile;
 
@@ -66,13 +67,13 @@ inner_key = "inner_value"
 
     #[test]
     fn test_get_effective_domain_and_key() {
-        let (d, k) = effective("finder", "ShowPathbar");
+        let (d, k) = get_effective_system_domain("finder", "ShowPathbar");
         assert_eq!((d, k), ("com.apple.finder".into(), "ShowPathbar".into()));
 
-        let (d, k) = effective("NSGlobalDomain", "Foo");
+        let (d, k) = get_effective_system_domain("NSGlobalDomain", "Foo");
         assert_eq!((d, k), ("NSGlobalDomain".into(), "Foo".into()));
 
-        let (d, k) = effective("NSGlobalDomain.bar", "Baz");
+        let (d, k) = get_effective_system_domain("NSGlobalDomain.bar", "Baz");
         assert_eq!((d, k), ("NSGlobalDomain".into(), "bar.Baz".into()));
     }
 

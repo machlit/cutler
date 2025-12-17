@@ -9,7 +9,7 @@ use crate::{
     domains::{
         collect,
         convert::{prefvalue_to_serializable, toml_to_prefvalue},
-        core,
+        core::{self, get_system_domains},
     },
     exec::{ExecMode, run_all},
     log_cute, log_dry, log_err, log_info, log_warn,
@@ -119,20 +119,22 @@ impl Runnable for ApplyCmd {
             .collect();
 
         let mut jobs: Vec<PreferenceJob> = Vec::new();
-
-        let domains_list: HashSet<String> = Preferences::list_domains()?
-            .iter()
-            .map(std::string::ToString::to_string)
-            .collect();
+        let system_domains: HashSet<String> = get_system_domains()?;
 
         // create jobs for applying
         for (dom, table) in domains {
             for (key, toml_value) in table {
-                let (eff_dom, eff_key) = core::effective(&dom, &key);
+                let (eff_dom, eff_key) = {
+                    if system_domains.contains(&dom) {
+                        (dom.clone(), key)
+                    } else {
+                        core::get_effective_system_domain(&dom, &key)
+                    }
+                };
 
                 if !self.no_dom_check
                     && eff_dom != "NSGlobalDomain"
-                    && !domains_list.contains(&eff_dom)
+                    && !system_domains.contains(&eff_dom)
                 {
                     bail!(
                         "Domain \"{eff_dom}\" was not found; cannot write to it. Disable this behavior by passing: --no-dom-check"
