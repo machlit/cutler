@@ -84,7 +84,7 @@ impl Runnable for ResetCmd {
         // restart system services if requested
         restart_services().await;
 
-        log_cute!("Reset operation complete.");
+        log_cute!("Reset complete.");
 
         Ok(())
     }

@@ -147,7 +147,7 @@ impl Runnable for BrewBackupCmd {
         } else {
             doc.save(conf.path()).await?;
 
-            log_cute!("Done!");
+            log_cute!("Backup written to current configuration file.");
         }
 
         Ok(())

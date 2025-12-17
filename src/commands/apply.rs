@@ -278,7 +278,7 @@ impl Runnable for ApplyCmd {
             let exec_run_count = run_all(loaded_config, mode).await?;
 
             if dry_run {
-                log_dry!("Would save snapshot with external command execution.",);
+                log_dry!("Would save snapshot with external command execution.");
             } else if exec_run_count > 0 {
                 new_snap.exec_run_count = exec_run_count;
                 new_snap.save().await?;
@@ -287,7 +287,7 @@ impl Runnable for ApplyCmd {
             }
         }
 
-        log_cute!("Apply operation complete.");
+        log_cute!("Applying complete!");
 
         Ok(())
     }

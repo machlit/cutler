@@ -16,7 +16,7 @@ use crate::{
 };
 
 #[derive(Debug, Args)]
-pub struct ConfigCmd {}
+pub struct ConfigCmd;
 
 #[async_trait]
 impl Runnable for ConfigCmd {
@@ -25,7 +25,6 @@ impl Runnable for ConfigCmd {
     }
 
     async fn run(&self, config: &Config) -> Result<()> {
-        // handle dry‑run
         if should_dry_run() {
             log_dry!("Would display config from {:?}", config.path());
             return Ok(());
@@ -35,7 +34,7 @@ impl Runnable for ConfigCmd {
         let editor = env::var("EDITOR");
 
         if let Ok(editor_cmd) = editor {
-            // Split the editor command into program and args, respecting quoted arguments
+            // split the editor command into program and args, respecting quoted arguments
             let parsed = shell_words::split(&editor_cmd);
             let (program, args) = match parsed {
                 Ok(mut parts) if !parts.is_empty() => {
