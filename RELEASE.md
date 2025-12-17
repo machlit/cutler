@@ -1,3 +1,3 @@
-## ✨ New Features
+## ✨
 
-- cutler now supports **app-specific domains**. See [this part of the documentation](https://machlit.github.io/cutler/usage/basics-and-system-settings.html#app-preferences) to learn more.
+- Stability changes across the board. Removed features from v0.18.0 as they were too incomplete to continue. A different iteration of the features will be appearing in a later version.
