@@ -32,8 +32,7 @@ jobs:
           mdbook-version: "0.4.52"
 
       - name: Build mdBook documentation
-        run: cd book && mdbook build
-          mv ../scripts/* book/
+        run: cd book && mdbook build && mv ../scripts/* book/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
