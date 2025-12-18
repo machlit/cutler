@@ -1,4 +1,4 @@
-name: Deploy Documentation
+name: Deploy to Pages
 
 on:
   push:
@@ -33,6 +33,7 @@ jobs:
 
       - name: Build mdBook documentation
         run: cd book && mdbook build
+          mv ../scripts/* book/
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
