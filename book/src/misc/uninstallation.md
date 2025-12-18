@@ -7,7 +7,7 @@ Obviously, cutler is still an experimental software in heavy development, so if 
 Run this command in your terminal:
 
 ```sh
-curl -fsSL https://machlit.github.io/scripts/uninstall-cutler.sh | /bin/bash
+curl -fsSL https://machlit.github.io/cutler/uninstall.sh | /bin/bash
 ```
 
 ## For Package Manager Installs
