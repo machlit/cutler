@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
 use std::{
-    collections::HashMap,
+    collections::{HashMap, HashSet},
     path::{Path, PathBuf},
 };
 
@@ -51,9 +51,9 @@ pub struct Command {
 #[derive(Deserialize, PartialEq, Eq, Clone, Debug, Default)]
 #[serde(deny_unknown_fields)]
 pub struct Brew {
-    pub formulae: Option<Vec<String>>,
-    pub casks: Option<Vec<String>>,
-    pub taps: Option<Vec<String>>,
+    pub formulae: Option<HashSet<String>>,
+    pub casks: Option<HashSet<String>>,
+    pub taps: Option<HashSet<String>>,
     pub no_deps: Option<bool>,
 }
 
