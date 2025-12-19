@@ -1,3 +1,3 @@
 ## ✨
 
-- Stability changes across the board. Removed features from v0.18.0 as they were too incomplete to continue. A different iteration of the features will be appearing in a later version.
+- Homebrew core has been optimized. Minimal changes, but should keep the stability up a notch before any larger update happens.
