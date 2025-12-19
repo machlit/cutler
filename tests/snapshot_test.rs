@@ -19,7 +19,7 @@ mod tests {
         // Test creation with Snapshot wrapper
         let snapshot = Snapshot::new(snapshot_path.clone());
         let loaded_snapshot = snapshot.new_empty();
-        
+
         assert_eq!(loaded_snapshot.settings.len(), 0);
         assert_eq!(loaded_snapshot.exec_run_count, 0);
         assert_eq!(loaded_snapshot.version, env!("CARGO_PKG_VERSION"));
@@ -223,7 +223,7 @@ mod tests {
         let existing_snapshot = Snapshot::new(existing_path.clone());
         let loaded = existing_snapshot.new_empty();
         loaded.save().await.unwrap();
-        
+
         assert!(existing_snapshot.is_loadable());
     }
 
