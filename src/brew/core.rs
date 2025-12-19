@@ -157,11 +157,7 @@ pub async fn diff_brew(brew_cfg: Brew) -> Result<BrewDiff> {
         log_info!("--no-deps used, proceeding with checks...");
         let installed_as_deps = brew_list(BrewListType::Dependency).await?;
 
-        installed_formulae = installed_formulae
-            .iter()
-            .filter(|&f| !installed_as_deps.contains(f))
-            .cloned()
-            .collect();
+        installed_formulae.retain(|f| !installed_as_deps.contains(f));
     }
 
     // compute missing/extra
