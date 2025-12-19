@@ -4,7 +4,7 @@
 mod tests {
     use cutler::{
         domains::convert::SerializablePrefValue,
-        snapshot::core::{LoadedSnapshot, SettingState, Snapshot},
+        snapshot::core::{SettingState, Snapshot},
     };
     use std::{collections::HashMap, env};
     use tempfile::TempDir;
@@ -263,9 +263,7 @@ mod tests {
             ]
         }"#;
 
-        fs::write(&snapshot_path, settings_only_json)
-            .await
-            .unwrap();
+        fs::write(&snapshot_path, settings_only_json).await.unwrap();
 
         // Load the snapshot - should use fallback deserialization
         let snapshot = Snapshot::new(snapshot_path.clone());
@@ -275,9 +273,13 @@ mod tests {
         assert_eq!(loaded_snapshot.settings.len(), 1);
         assert_eq!(loaded_snapshot.settings[0].domain, "com.apple.dock");
         assert_eq!(loaded_snapshot.settings[0].key, "tilesize");
+
+        let mut dict = HashMap::new();
+        dict.insert("Integer".to_string(), SerializablePrefValue::Integer(42));
+
         assert_eq!(
             loaded_snapshot.settings[0].original_value,
-            Some(SerializablePrefValue::Integer(42))
+            Some(SerializablePrefValue::Dictionary(dict))
         );
 
         // Verify default values were set for missing fields
