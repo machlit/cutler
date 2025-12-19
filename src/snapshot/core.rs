@@ -33,6 +33,7 @@ pub struct LoadedSnapshot {
 }
 
 impl LoadedSnapshot {
+    #[must_use] 
     pub fn path(&self) -> &Path {
         &self.path
     }
