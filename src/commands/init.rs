@@ -5,7 +5,7 @@ use async_trait::async_trait;
 use clap::Args;
 use tokio::fs;
 
-use crate::{commands::Runnable, config::Config, log_cute, log_warn, util::io::confirm};
+use crate::{commands::Runnable, context::AppContext, log_cute, log_warn, util::io::confirm};
 
 #[derive(Args, Debug)]
 pub struct InitCmd;
@@ -16,9 +16,12 @@ impl Runnable for InitCmd {
         false
     }
 
-    async fn run(&self, config: &Config) -> Result<()> {
-        if config.is_loadable() {
-            log_warn!("Configuration file already exists at {:?}", config.path());
+    async fn run(&self, ctx: &AppContext) -> Result<()> {
+        if ctx.config.is_loadable() {
+            log_warn!(
+                "Configuration file already exists at {:?}",
+                ctx.config.path()
+            );
             if !confirm("Do you want to overwrite it?") {
                 bail!("Configuration init aborted.")
             }
@@ -29,17 +32,17 @@ impl Runnable for InitCmd {
         let default_cfg = include_str!("../../examples/complete.toml");
 
         fs::create_dir_all(
-            config
+            ctx.config
                 .path()
                 .parent()
                 .with_context(|| "Failed to initialize new configuration path.".to_string())?,
         )
         .await?;
-        fs::write(config.path(), default_cfg).await?;
+        fs::write(ctx.config.path(), default_cfg).await?;
 
         log_cute!(
             "Config created at {:?}, Review and customize it before applying.",
-            config.path()
+            ctx.config.path()
         );
 
         Ok(())

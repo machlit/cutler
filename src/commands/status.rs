@@ -6,7 +6,7 @@ use crate::{
         types::BrewDiff,
     },
     commands::Runnable,
-    config::Config,
+    context::AppContext,
     domains::{
         collect,
         core::{get_effective_sys_domain_key, get_sys_domain_strings},
@@ -33,8 +33,8 @@ impl Runnable for StatusCmd {
         false
     }
 
-    async fn run(&self, config: &Config) -> Result<()> {
-        let domains = collect(config).await?;
+    async fn run(&self, ctx: &AppContext) -> Result<()> {
+        let domains = collect(&ctx.config).await?;
 
         // flatten all settings into a list
         let entries: Vec<(String, String, toml::Value)> = domains
@@ -127,7 +127,7 @@ impl Runnable for StatusCmd {
 
         // brew status check
         {
-            let toml_brew = (config.load(false)).await?.brew.clone();
+            let toml_brew = (ctx.config.load(false)).await?.brew.clone();
             let no_brew = self.no_brew;
 
             if !no_brew && let Some(brew_val) = toml_brew {

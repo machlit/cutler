@@ -10,8 +10,7 @@ use cutler::cli::atomic::{
     set_accept_all, set_dry_run, set_no_restart_services, set_quiet, set_verbose,
 };
 use cutler::commands::Runnable;
-use cutler::config::Config;
-use cutler::config::get_config_path;
+use cutler::context::AppContextManager;
 use cutler::util::sudo::{run_with_noroot, run_with_root};
 use cutler::{log_err, log_info};
 
@@ -27,14 +26,20 @@ async fn main() {
     set_dry_run(args.dry_run);
     set_no_restart_services(args.no_restart_services);
 
-    // decide configuration path for the entire lifetime of the program
-    let config = Config::new(get_config_path());
+    // create app context
+    let ctx = match AppContextManager::sync().await {
+        Ok(ctx) => ctx,
+        Err(_) => {
+            log_err!("App context failed to initialize for cutler.");
+            exit(1);
+        }
+    };
 
     // remote config auto-sync logic
     if args.no_sync {
         log_info!("Skipping remote config autosync.");
     } else {
-        try_auto_sync(&args.command, &config).await;
+        try_auto_sync(&args.command, &ctx.config).await;
     }
 
     // command invocation (for real this time)
@@ -50,7 +55,7 @@ async fn main() {
         exit(1);
     }
 
-    let result = runnable.run(&config).await;
+    let result = runnable.run(&ctx).await;
 
     if let Err(err) = result {
         log_err!("{err}");

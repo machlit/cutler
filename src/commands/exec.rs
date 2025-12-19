@@ -2,7 +2,7 @@
 
 use crate::commands::Runnable;
 
-use crate::config::Config;
+use crate::context::AppContext;
 use crate::exec::{ExecMode, run_all, run_one};
 use anyhow::Result;
 use async_trait::async_trait;
@@ -29,8 +29,8 @@ impl Runnable for ExecCmd {
         false
     }
 
-    async fn run(&self, config: &Config) -> Result<()> {
-        let loaded_config = config.load(true).await?;
+    async fn run(&self, ctx: &AppContext) -> Result<()> {
+        let loaded_config = ctx.config.load(true).await?;
 
         let mode = if self.all {
             ExecMode::All

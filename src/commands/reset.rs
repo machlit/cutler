@@ -9,10 +9,9 @@ use tokio::fs;
 use crate::{
     cli::atomic::should_dry_run,
     commands::Runnable,
-    config::Config,
+    context::AppContext,
     domains::{collect, core::get_effective_sys_domain_key, read_current},
     log_cute, log_dry, log_err, log_info, log_warn,
-    snapshot::{Snapshot, get_snapshot_path},
     util::io::{confirm, restart_services},
 };
 
@@ -25,7 +24,7 @@ impl Runnable for ResetCmd {
         false
     }
 
-    async fn run(&self, config: &Config) -> Result<()> {
+    async fn run(&self, ctx: &AppContext) -> Result<()> {
         let dry_run = should_dry_run();
 
         log_warn!("This will DELETE all settings defined in your config file.",);
@@ -35,7 +34,7 @@ impl Runnable for ResetCmd {
             return Ok(());
         }
 
-        let config_system_domains = collect(config).await?;
+        let config_system_domains = collect(&ctx.config).await?;
 
         for (dom, table) in config_system_domains {
             for (key, _) in table {
@@ -68,8 +67,9 @@ impl Runnable for ResetCmd {
         }
 
         // remove snapshot if present
-        let snap_path = get_snapshot_path().await?;
-        if Snapshot::is_loadable().await {
+        let snap_path = ctx.snapshot.path();
+
+        if ctx.snapshot.is_loadable() {
             if dry_run {
                 log_dry!("Would remove snapshot at {snap_path:?}",);
             } else if let Err(e) = fs::remove_file(&snap_path).await {

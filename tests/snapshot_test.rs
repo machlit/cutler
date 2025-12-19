@@ -17,7 +17,7 @@ mod tests {
     #[tokio::test]
     async fn test_get_snapshot_path() {
         // Test that get_snapshot_path returns snapshot.json in the config parent directory
-        let snapshot_path = get_snapshot_path().await.unwrap();
+        let snapshot_path = get_snapshot_path().unwrap();
         assert_eq!(
             snapshot_path,
             get_config_path().parent().unwrap().join("snapshot.json")
@@ -27,7 +27,7 @@ mod tests {
     #[tokio::test]
     async fn test_snapshot_basic() {
         // Test creation
-        let snapshot = Snapshot::new().await.unwrap();
+        let snapshot = Snapshot::new_empty().await.unwrap();
         assert_eq!(snapshot.settings.len(), 0);
         assert_eq!(snapshot.exec_run_count, 0);
         assert_eq!(snapshot.version, env!("CARGO_PKG_VERSION"));

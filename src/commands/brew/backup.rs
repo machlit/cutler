@@ -14,7 +14,8 @@ use crate::{
     },
     cli::atomic::should_dry_run,
     commands::Runnable,
-    config::{Config, ConfigCoreMethods},
+    config::ConfigCoreMethods,
+    context::AppContext,
     log_cute, log_dry, log_info, log_warn,
     util::io::confirm,
 };
@@ -32,7 +33,7 @@ impl Runnable for BrewBackupCmd {
         false
     }
 
-    async fn run(&self, conf: &Config) -> Result<()> {
+    async fn run(&self, ctx: &AppContext) -> Result<()> {
         let dry_run = should_dry_run();
         let mut backup_no_deps = self.no_deps;
 
@@ -40,7 +41,7 @@ impl Runnable for BrewBackupCmd {
         ensure_brew().await?;
 
         // init config
-        let mut doc = if let Ok(doc) = conf.load_as_mut(true).await {
+        let mut doc = if let Ok(doc) = ctx.config.load_as_mut(true).await {
             doc
         } else {
             log_warn!("Configuration does not exist; a new one will be created.");
@@ -144,11 +145,12 @@ impl Runnable for BrewBackupCmd {
         brew_tbl["taps"] = value(taps_arr);
 
         // write backup
-        if dry_run {
-            log_info!("Backup would be saved to {:?}", conf.path());
-        } else {
-            doc.save(conf.path()).await?;
+        let path = ctx.config.path();
 
+        if dry_run {
+            log_info!("Backup would be saved to {:?}", path);
+        } else {
+            doc.save(path).await?;
             log_cute!("Backup written to current configuration file.");
         }
 

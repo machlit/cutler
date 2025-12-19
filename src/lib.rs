@@ -5,6 +5,7 @@ pub mod brew;
 pub mod cli;
 pub mod commands;
 pub mod config;
+pub mod context;
 pub mod domains;
 pub mod exec;
 pub mod snapshot;
