@@ -165,21 +165,7 @@ impl Runnable for StatusCmd {
 
                             if any_diff {
                                 log_warn!("Homebrew diverged.",);
-
-                                if !missing_casks.is_empty()
-                                    || !missing_formulae.is_empty()
-                                    || !missing_taps.is_empty()
-                                {
-                                    log_warn!(
-                                        "Run `cutler brew install` to install missing software."
-                                    );
-                                }
-                                if !extra_casks.is_empty()
-                                    || !extra_formulae.is_empty()
-                                    || !extra_taps.is_empty()
-                                {
-                                    log_warn!("Run `cutler brew backup` to backup extra software.");
-                                }
+                                log_warn!("Run `cutler brew <subcmd>` for backup/installs.")
                             } else {
                                 log_cute!("Homebrew status on sync.");
                             }

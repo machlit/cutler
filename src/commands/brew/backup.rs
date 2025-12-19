@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
+use std::collections::HashSet;
+
 use anyhow::Result;
 use async_trait::async_trait;
 use clap::Args;
@@ -74,16 +76,16 @@ impl Runnable for BrewBackupCmd {
         // load deps into memory for comparison
         // this will also be reused for later comparisons
         let deps = if backup_no_deps {
-            brew_list(BrewListType::Dependency, false).await?
+            brew_list(BrewListType::Dependency).await?
         } else {
-            vec![]
+            HashSet::new()
         };
 
         // load the formulae, casks and taps list from the `brew` command
         // flattening is `false` since we want all names to be forced to --full-name
-        let formulas = brew_list(BrewListType::Formula, false).await?;
-        let casks = brew_list(BrewListType::Cask, false).await?;
-        let taps = brew_list(BrewListType::Tap, false).await?;
+        let formulas = brew_list(BrewListType::Formula).await?;
+        let casks = brew_list(BrewListType::Cask).await?;
+        let taps = brew_list(BrewListType::Tap).await?;
 
         // build formulae and casks arrays
         let mut formula_arr = Array::new();
