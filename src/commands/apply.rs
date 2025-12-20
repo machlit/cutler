@@ -5,7 +5,8 @@ use std::collections::{HashMap, HashSet};
 use crate::{
     cli::atomic::should_dry_run,
     commands::{BrewInstallCmd, Runnable},
-    config::{Config, get_config_path, remote::RemoteConfigManager},
+    config::remote::RemoteConfigManager,
+    context::AppContext,
     domains::{
         collect,
         convert::{prefvalue_to_serializable, toml_to_prefvalue},
@@ -13,10 +14,7 @@ use crate::{
     },
     exec::{ExecMode, run_all},
     log_cute, log_dry, log_err, log_info, log_warn,
-    snapshot::{
-        core::{SettingState, Snapshot},
-        get_snapshot_path,
-    },
+    snapshot::core::SettingState,
     util::{
         io::{confirm, restart_services},
         sha::get_digest,
@@ -71,12 +69,12 @@ impl Runnable for ApplyCmd {
         false
     }
 
-    async fn run(&self, config: &Config) -> Result<()> {
+    async fn run(&self, ctx: &AppContext) -> Result<()> {
         let dry_run = should_dry_run();
 
         // remote download logic
         if let Some(url) = &self.url {
-            if config.is_loadable()
+            if ctx.config.is_loadable()
                 && !confirm("Local config exists but a URL was still passed. Proceed?")
             {
                 bail!("Aborted apply: --url is passed despite local config.")
@@ -86,29 +84,29 @@ impl Runnable for ApplyCmd {
             remote_mgr.fetch().await?;
             remote_mgr.save().await?;
 
-            log_info!("Remote config downloaded at path: {:?}", get_config_path());
+            log_info!("Remote config downloaded at path: {:?}", ctx.config.path());
         }
 
         // parse + flatten domains
-        let digest = get_digest(config.path())?;
-        let config_system_domains = collect(config).await?;
+        let digest = get_digest(ctx.config.path())?;
+        let config_system_domains = collect(&ctx.config).await?;
 
         // load the old snapshot (if any), otherwise create a new instance
-        let snap_path = get_snapshot_path().await?;
         let mut is_bad_snap: bool = false;
 
-        let snap = if Snapshot::is_loadable().await {
-            match Snapshot::load(&snap_path).await {
+        let snap = if ctx.snapshot.is_loadable() {
+            match ctx.snapshot.load().await {
                 Ok(snap) => snap,
                 Err(e) => {
                     log_warn!("Bad snapshot: {e}; starting new.");
                     log_warn!("When unapplying, all your settings will reset to factory defaults.");
+
                     is_bad_snap = true;
-                    Snapshot::new().await?
+                    ctx.snapshot.new_empty()
                 }
             }
         } else {
-            Snapshot::new().await?
+            ctx.snapshot.new_empty()
         };
 
         // ---
@@ -236,7 +234,8 @@ impl Runnable for ApplyCmd {
         }
 
         // prepare snapshot (old + new)
-        let mut new_snap = Snapshot::new().await?;
+        let mut new_snap = ctx.snapshot.new_empty();
+
         for ((_, _), old_entry) in existing {
             new_snap.settings.push(old_entry.clone());
         }
@@ -261,7 +260,7 @@ impl Runnable for ApplyCmd {
 
         // run brew
         if self.brew {
-            BrewInstallCmd.run(config).await?;
+            BrewInstallCmd.run(ctx).await?;
         }
 
         // exec external commands
@@ -274,7 +273,7 @@ impl Runnable for ApplyCmd {
                 ExecMode::Regular
             };
 
-            let loaded_config = config.load(true).await?;
+            let loaded_config = ctx.config.load(true).await?;
             let exec_run_count = run_all(loaded_config, mode).await?;
 
             if dry_run {

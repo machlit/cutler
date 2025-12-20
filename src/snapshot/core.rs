@@ -2,11 +2,11 @@
 
 use anyhow::{Context, Result, bail};
 use serde::{Deserialize, Serialize};
-use std::{env, path::PathBuf};
+use std::path::Path;
+use std::path::PathBuf;
 use tokio::fs;
 
 use crate::domains::convert::SerializablePrefValue;
-use crate::snapshot::get_snapshot_path;
 
 /// A single defaults‑setting change.
 #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -21,41 +21,28 @@ pub struct SettingState {
 ///
 /// This struct has also implemented I/O operations and functions for using across cutler's codebase,
 /// in order to properly interact with the snapshot file without much hassle.
-#[derive(Serialize, Deserialize, Debug, Default)]
+#[derive(Serialize, Deserialize, Debug)]
 #[serde(deny_unknown_fields)]
-pub struct Snapshot {
+pub struct LoadedSnapshot {
     pub settings: Vec<SettingState>,
     pub exec_run_count: i32,
     pub version: String,
     pub digest: String,
     #[serde(skip)]
-    pub path: PathBuf,
+    path: PathBuf,
 }
 
-impl Snapshot {
-    /// Checks if the snapshot exists.
-    /// This is a more tinified approach for regular `fs::try_exists()` calls as `get_snapshot_path()`
-    /// returns a Result and could be cumbersome to implement everywhere in the codebase.
-    pub async fn is_loadable() -> bool {
-        if let Ok(snap_path) = get_snapshot_path().await {
-            fs::try_exists(snap_path).await.unwrap_or_default()
-        } else {
-            false
-        }
+impl LoadedSnapshot {
+    #[must_use]
+    pub fn path(&self) -> &Path {
+        &self.path
     }
 
-    /// Creates a new snapshot.
-    /// Note that the path field is decided by `get_snapshot_path()`.
-    pub async fn new() -> Result<Self> {
-        Ok(Self {
-            settings: Vec::new(),
-            version: env!("CARGO_PKG_VERSION").into(),
-            path: get_snapshot_path()
-                .await
-                .with_context(|| "Failed to get snapshot path.".to_string())?,
-            exec_run_count: 0,
-            digest: String::new(),
-        })
+    /// Deletes the snapshot.
+    pub async fn delete(&self) -> Result<()> {
+        fs::remove_file(&self.path)
+            .await
+            .with_context(|| format!("Could not delete snapshot file {:?}.", &self.path))
     }
 
     /// Saves the snapshot into the designated path for the instance.
@@ -68,31 +55,65 @@ impl Snapshot {
         fs::write(&self.path, json).await?;
         Ok(())
     }
+}
+
+pub struct Snapshot {
+    path: PathBuf,
+}
+
+impl Snapshot {
+    #[must_use]
+    pub const fn new(path: PathBuf) -> Self {
+        Self { path }
+    }
+
+    #[must_use]
+    pub fn path(&self) -> &Path {
+        self.path.as_path()
+    }
+
+    #[must_use]
+    pub fn is_loadable(&self) -> bool {
+        !self.path.as_os_str().is_empty() && self.path.try_exists().unwrap_or(false)
+    }
+
+    #[must_use]
+    pub fn new_empty(&self) -> LoadedSnapshot {
+        LoadedSnapshot {
+            settings: vec![],
+            exec_run_count: 0,
+            version: env!("CARGO_PKG_VERSION").to_string(),
+            digest: String::new(),
+            path: self.path.clone(),
+        }
+    }
 
     /// Loads the snapshot from the given path.
     /// If deserialization of the full Snapshot fails, try to deserialize only the `settings` field.
-    pub async fn load(path: &PathBuf) -> Result<Self> {
-        if fs::try_exists(path).await.unwrap_or_default() {
-            let txt = fs::read_to_string(path).await?;
-            let snap_result: Result<Self, _> = serde_json::from_str(&txt);
+    pub async fn load(&self) -> Result<LoadedSnapshot> {
+        if self.is_loadable() {
+            let txt = fs::read_to_string(&self.path).await?;
+            let snap_result: Result<LoadedSnapshot, _> = serde_json::from_str(&txt);
 
             match snap_result {
                 Ok(mut snap) => {
-                    snap.path = path.clone();
+                    snap.path = self.path.to_owned();
                     Ok(snap)
                 }
                 Err(e) => {
-                    // Try to deserialize only the settings field if everything else fails.
+                    // fallback settings-only deserialization
                     #[derive(Deserialize)]
                     struct SettingsOnly {
                         settings: Vec<SettingState>,
                     }
+
                     let settings_only_result: Result<SettingsOnly, _> = serde_json::from_str(&txt);
+
                     match settings_only_result {
                         Ok(settings_only) => {
-                            let mut snap = Self::new().await?;
+                            let mut snap = self.new_empty();
                             snap.settings = settings_only.settings;
-                            snap.path = path.clone();
+                            snap.path = self.path.to_owned();
                             Ok(snap)
                         }
                         Err(_) => {
@@ -104,12 +125,5 @@ impl Snapshot {
         } else {
             bail!("Invalid path, cannot load.")
         }
-    }
-
-    /// Deletes the snapshot.
-    pub async fn delete(&self) -> Result<()> {
-        fs::remove_file(&self.path)
-            .await
-            .with_context(|| format!("Could not delete snapshot file {:?}.", &self.path))
     }
 }

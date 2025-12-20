@@ -8,10 +8,9 @@ use defaults_rs::{Domain, PrefValue, Preferences};
 use crate::{
     cli::atomic::should_dry_run,
     commands::{ResetCmd, Runnable},
-    config::Config,
+    context::AppContext,
     domains::convert::serializable_to_prefvalue,
     log_cute, log_dry, log_err, log_info, log_warn,
-    snapshot::{core::Snapshot, get_snapshot_path},
     util::{
         io::{confirm, restart_services},
         sha::get_digest,
@@ -27,12 +26,12 @@ impl Runnable for UnapplyCmd {
         false
     }
 
-    async fn run(&self, config: &Config) -> Result<()> {
-        if !Snapshot::is_loadable().await {
+    async fn run(&self, ctx: &AppContext) -> Result<()> {
+        if !ctx.snapshot.is_loadable() {
             log_warn!("No snapshot found to revert.");
 
             if confirm("Reset all System Settings instead?") {
-                return ResetCmd.run(config).await;
+                return ResetCmd.run(ctx).await;
             }
             bail!("Abort operation.")
         }
@@ -40,8 +39,7 @@ impl Runnable for UnapplyCmd {
         let dry_run = should_dry_run();
 
         // load snapshot from disk
-        let snap_path = get_snapshot_path().await?;
-        let snapshot = match Snapshot::load(&snap_path).await {
+        let snapshot = match ctx.snapshot.load().await {
             Ok(snap) => snap,
             Err(_) => {
                 bail!(
@@ -51,7 +49,7 @@ impl Runnable for UnapplyCmd {
             }
         };
 
-        if snapshot.digest != get_digest(config.path())? {
+        if snapshot.digest != get_digest(ctx.config.path())? {
             log_warn!("Config has been modified since last application.",);
             log_warn!("Please note that only the applied modifications will be unapplied.",);
         }
@@ -86,7 +84,7 @@ impl Runnable for UnapplyCmd {
                 log_dry!("Would delete setting: {domain} | {key}",);
             }
 
-            log_dry!("Would delete snapshot at path: {:?}", snapshot.path);
+            log_dry!("Would delete snapshot at path: {:?}", ctx.snapshot.path());
         } else {
             let mut settings_modified_count = 0;
 

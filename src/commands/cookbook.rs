@@ -4,7 +4,7 @@ use anyhow::Result;
 use async_trait::async_trait;
 use clap::Args;
 
-use crate::{commands::Runnable, config::Config, util::io::open};
+use crate::{commands::Runnable, context::AppContext, util::io::open};
 
 #[derive(Args, Debug)]
 pub struct CookbookCmd;
@@ -15,7 +15,7 @@ impl Runnable for CookbookCmd {
         false
     }
 
-    async fn run(&self, _: &Config) -> Result<()> {
+    async fn run(&self, _: &AppContext) -> Result<()> {
         open("https://machlit.github.io/cutler").await
     }
 }

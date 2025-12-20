@@ -3,34 +3,27 @@
 #[cfg(test)]
 mod tests {
     use cutler::{
-        config::get_config_path,
         domains::convert::SerializablePrefValue,
-        snapshot::{
-            core::{SettingState, Snapshot},
-            get_snapshot_path,
-        },
+        snapshot::core::{SettingState, Snapshot},
     };
-    use std::{collections::HashMap, env, path::PathBuf};
+    use std::{collections::HashMap, env};
     use tempfile::TempDir;
     use tokio::fs;
 
     #[tokio::test]
-    async fn test_get_snapshot_path() {
-        // Test that get_snapshot_path returns snapshot.json in the config parent directory
-        let snapshot_path = get_snapshot_path().await.unwrap();
-        assert_eq!(
-            snapshot_path,
-            get_config_path().parent().unwrap().join("snapshot.json")
-        );
-    }
-
-    #[tokio::test]
     async fn test_snapshot_basic() {
-        // Test creation
-        let snapshot = Snapshot::new().await.unwrap();
-        assert_eq!(snapshot.settings.len(), 0);
-        assert_eq!(snapshot.exec_run_count, 0);
-        assert_eq!(snapshot.version, env!("CARGO_PKG_VERSION"));
+        // Create a temporary directory for the snapshot
+        let temp_dir = TempDir::new().unwrap();
+        let snapshot_path = temp_dir.path().join("test_snapshot.json");
+
+        // Test creation with Snapshot wrapper
+        let snapshot = Snapshot::new(snapshot_path.clone());
+        let loaded_snapshot = snapshot.new_empty();
+
+        assert_eq!(loaded_snapshot.settings.len(), 0);
+        assert_eq!(loaded_snapshot.exec_run_count, 0);
+        assert_eq!(loaded_snapshot.version, env!("CARGO_PKG_VERSION"));
+        assert_eq!(loaded_snapshot.path(), snapshot_path.as_path());
 
         // Test setting state
         let setting = SettingState {
@@ -48,35 +41,35 @@ mod tests {
 
     #[tokio::test]
     async fn test_snapshot_serialization() {
-        // Create a comprehensive snapshot with test data
-        let mut snapshot = Snapshot::new().await.unwrap();
+        // Create a temporary directory for the snapshot
+        let temp_dir = TempDir::new().unwrap();
+        let snapshot_path = temp_dir.path().join("test_snapshot.json");
+
+        // Create a Snapshot wrapper and get an empty LoadedSnapshot
+        let snapshot = Snapshot::new(snapshot_path.clone());
+        let mut loaded_snapshot = snapshot.new_empty();
 
         // Add multiple settings with different patterns
-        snapshot.settings.push(SettingState {
+        loaded_snapshot.settings.push(SettingState {
             domain: "com.apple.dock".to_string(),
             key: "tilesize".to_string(),
             original_value: Some(SerializablePrefValue::Integer(36)),
         });
 
-        snapshot.settings.push(SettingState {
+        loaded_snapshot.settings.push(SettingState {
             domain: "com.apple.finder".to_string(),
             key: "ShowPathbar".to_string(),
             original_value: None, // Test null original value
         });
 
-        snapshot.settings.push(SettingState {
+        loaded_snapshot.settings.push(SettingState {
             domain: "NSGlobalDomain".to_string(),
             key: "ApplePressAndHoldEnabled".to_string(),
             original_value: Some(SerializablePrefValue::Boolean(false)),
         });
 
-        // Create a temporary file to store the snapshot
-        let temp_dir = TempDir::new().unwrap();
-        let snapshot_path = temp_dir.path().join("test_snapshot.json");
-
         // Save the snapshot
-        snapshot.path = snapshot_path.clone();
-        snapshot.save().await.unwrap();
+        loaded_snapshot.save().await.unwrap();
 
         // Verify file exists and has content
         assert!(fs::try_exists(&snapshot_path).await.unwrap());
@@ -84,14 +77,14 @@ mod tests {
         assert!(content.contains("com.apple.dock"));
         assert!(content.contains("tilesize"));
 
-        // Load the snapshot back
-        let loaded_snapshot = Snapshot::load(&snapshot_path).await.unwrap();
+        // Load the snapshot back using the Snapshot wrapper
+        let reloaded_snapshot = snapshot.load().await.unwrap();
 
         // Verify contents match
-        assert_eq!(loaded_snapshot.settings.len(), 3);
+        assert_eq!(reloaded_snapshot.settings.len(), 3);
 
         // Convert to HashMap for easier testing
-        let settings_map: HashMap<_, _> = loaded_snapshot
+        let settings_map: HashMap<_, _> = reloaded_snapshot
             .settings
             .iter()
             .map(|s| ((s.domain.clone(), s.key.clone()), s))
@@ -128,29 +121,35 @@ mod tests {
     #[tokio::test]
     async fn test_snapshot_error_handling() {
         // Test loading from non-existent file
-        let result = Snapshot::load(&PathBuf::from("/nonexistent/path")).await;
+        let temp_dir = TempDir::new().unwrap();
+        let nonexistent_path = temp_dir.path().join("nonexistent.json");
+        let snapshot = Snapshot::new(nonexistent_path);
+        let result = snapshot.load().await;
         assert!(result.is_err());
 
         // Test loading from invalid JSON
-        let temp_dir = TempDir::new().unwrap();
         let invalid_path = temp_dir.path().join("invalid.json");
         fs::write(&invalid_path, "this is not valid json")
             .await
             .unwrap();
 
-        let result = Snapshot::load(&invalid_path).await;
+        let invalid_snapshot = Snapshot::new(invalid_path);
+        let result = invalid_snapshot.load().await;
         assert!(result.is_err());
     }
 
     #[tokio::test]
     async fn test_snapshot_complex_types() {
-        use std::collections::HashMap;
+        // Create a temporary directory for the snapshot
+        let temp_dir = TempDir::new().unwrap();
+        let snapshot_path = temp_dir.path().join("test_complex_snapshot.json");
 
-        // Test snapshot with complex types (arrays, dictionaries)
-        let mut snapshot = Snapshot::new().await.unwrap();
+        // Create a Snapshot wrapper and get an empty LoadedSnapshot
+        let snapshot = Snapshot::new(snapshot_path.clone());
+        let mut loaded_snapshot = snapshot.new_empty();
 
         // Array type
-        snapshot.settings.push(SettingState {
+        loaded_snapshot.settings.push(SettingState {
             domain: "NSGlobalDomain".to_string(),
             key: "exampleArray".to_string(),
             original_value: Some(SerializablePrefValue::Array(vec![
@@ -165,25 +164,20 @@ mod tests {
         dict.insert("Preview".to_string(), SerializablePrefValue::Boolean(false));
         dict.insert("MetaData".to_string(), SerializablePrefValue::Boolean(true));
 
-        snapshot.settings.push(SettingState {
+        loaded_snapshot.settings.push(SettingState {
             domain: "com.apple.finder".to_string(),
             key: "FXInfoPanesExpanded".to_string(),
             original_value: Some(SerializablePrefValue::Dictionary(dict)),
         });
 
-        // Create a temporary file to store the snapshot
-        let temp_dir = TempDir::new().unwrap();
-        let snapshot_path = temp_dir.path().join("test_complex_snapshot.json");
-
         // Save the snapshot
-        snapshot.path = snapshot_path.clone();
-        snapshot.save().await.unwrap();
+        loaded_snapshot.save().await.unwrap();
 
-        // Load the snapshot back
-        let loaded_snapshot = Snapshot::load(&snapshot_path).await.unwrap();
+        // Load the snapshot back using the Snapshot wrapper
+        let reloaded_snapshot = snapshot.load().await.unwrap();
 
         // Verify array
-        let array_setting = &loaded_snapshot.settings[0];
+        let array_setting = &reloaded_snapshot.settings[0];
         assert_eq!(array_setting.domain, "NSGlobalDomain");
         assert_eq!(array_setting.key, "exampleArray");
         match &array_setting.original_value {
@@ -197,7 +191,7 @@ mod tests {
         }
 
         // Verify dictionary
-        let dict_setting = &loaded_snapshot.settings[1];
+        let dict_setting = &reloaded_snapshot.settings[1];
         assert_eq!(dict_setting.domain, "com.apple.finder");
         assert_eq!(dict_setting.key, "FXInfoPanesExpanded");
         match &dict_setting.original_value {
@@ -214,5 +208,95 @@ mod tests {
             }
             _ => panic!("Expected dictionary type"),
         }
+    }
+
+    #[tokio::test]
+    async fn test_snapshot_is_loadable() {
+        // Test is_loadable with non-existent file
+        let temp_dir = TempDir::new().unwrap();
+        let nonexistent_path = temp_dir.path().join("nonexistent.json");
+        let snapshot = Snapshot::new(nonexistent_path);
+        assert!(!snapshot.is_loadable());
+
+        // Test is_loadable with existing file
+        let existing_path = temp_dir.path().join("existing.json");
+        let existing_snapshot = Snapshot::new(existing_path.clone());
+        let loaded = existing_snapshot.new_empty();
+        loaded.save().await.unwrap();
+
+        assert!(existing_snapshot.is_loadable());
+    }
+
+    #[tokio::test]
+    async fn test_snapshot_delete() {
+        // Create a temporary directory and snapshot
+        let temp_dir = TempDir::new().unwrap();
+        let snapshot_path = temp_dir.path().join("test_delete.json");
+
+        let snapshot = Snapshot::new(snapshot_path.clone());
+        let loaded_snapshot = snapshot.new_empty();
+        loaded_snapshot.save().await.unwrap();
+
+        // Verify file exists
+        assert!(fs::try_exists(&snapshot_path).await.unwrap());
+
+        // Delete the snapshot
+        loaded_snapshot.delete().await.unwrap();
+
+        // Verify file no longer exists
+        assert!(!fs::try_exists(&snapshot_path).await.unwrap());
+    }
+
+    #[tokio::test]
+    async fn test_snapshot_fallback_deserialization() {
+        // Create a snapshot file with only the settings field (old format)
+        let temp_dir = TempDir::new().unwrap();
+        let snapshot_path = temp_dir.path().join("test_fallback.json");
+
+        let settings_only_json = r#"{
+            "settings": [
+                {
+                    "domain": "com.apple.dock",
+                    "key": "tilesize",
+                    "original_value": {"Integer": 42}
+                }
+            ]
+        }"#;
+
+        fs::write(&snapshot_path, settings_only_json).await.unwrap();
+
+        // Load the snapshot - should use fallback deserialization
+        let snapshot = Snapshot::new(snapshot_path.clone());
+        let loaded_snapshot = snapshot.load().await.unwrap();
+
+        // Verify settings were loaded
+        assert_eq!(loaded_snapshot.settings.len(), 1);
+        assert_eq!(loaded_snapshot.settings[0].domain, "com.apple.dock");
+        assert_eq!(loaded_snapshot.settings[0].key, "tilesize");
+
+        let mut dict = HashMap::new();
+        dict.insert("Integer".to_string(), SerializablePrefValue::Integer(42));
+
+        assert_eq!(
+            loaded_snapshot.settings[0].original_value,
+            Some(SerializablePrefValue::Dictionary(dict))
+        );
+
+        // Verify default values were set for missing fields
+        assert_eq!(loaded_snapshot.exec_run_count, 0);
+        assert_eq!(loaded_snapshot.version, env!("CARGO_PKG_VERSION"));
+    }
+
+    #[tokio::test]
+    async fn test_snapshot_path_method() {
+        // Test that path() returns the correct path
+        let temp_dir = TempDir::new().unwrap();
+        let snapshot_path = temp_dir.path().join("test_path.json");
+
+        let snapshot = Snapshot::new(snapshot_path.clone());
+        assert_eq!(snapshot.path(), snapshot_path.as_path());
+
+        let loaded_snapshot = snapshot.new_empty();
+        assert_eq!(loaded_snapshot.path(), snapshot_path.as_path());
     }
 }

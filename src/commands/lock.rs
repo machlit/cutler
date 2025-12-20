@@ -6,10 +6,8 @@ use clap::Args;
 use anyhow::{Result, bail};
 
 use crate::{
-    cli::atomic::should_dry_run,
-    commands::Runnable,
-    config::{Config, ConfigCoreMethods},
-    log_dry,
+    cli::atomic::should_dry_run, commands::Runnable, config::ConfigCoreMethods,
+    context::AppContext, log_dry,
 };
 
 #[derive(Debug, Args)]
@@ -21,12 +19,12 @@ impl Runnable for LockCmd {
         true
     }
 
-    async fn run(&self, config: &Config) -> Result<()> {
-        if !config.is_loadable() {
+    async fn run(&self, ctx: &AppContext) -> Result<()> {
+        if !ctx.config.is_loadable() {
             bail!("Cannot find a configuration to lock in the first place.")
         }
 
-        let mut document = config.load_as_mut(false).await?;
+        let mut document = ctx.config.load_as_mut(false).await?;
         let dry_run = should_dry_run();
 
         if document
@@ -41,7 +39,7 @@ impl Runnable for LockCmd {
         }
 
         document["lock"] = toml_edit::value(true);
-        document.save(config.path()).await?;
+        document.save(ctx.config.path()).await?;
 
         Ok(())
     }

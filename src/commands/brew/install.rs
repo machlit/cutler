@@ -12,7 +12,7 @@ use crate::{
     },
     cli::atomic::{should_be_quiet, should_dry_run},
     commands::Runnable,
-    config::Config,
+    context::AppContext,
     log_cute, log_dry, log_err, log_info, log_warn,
 };
 
@@ -25,10 +25,10 @@ impl Runnable for BrewInstallCmd {
         false
     }
 
-    async fn run(&self, config: &Config) -> Result<()> {
+    async fn run(&self, ctx: &AppContext) -> Result<()> {
         let dry_run = should_dry_run();
 
-        let loaded_config = config.load(true).await?;
+        let loaded_config = ctx.config.load(true).await?;
 
         let brew_cfg = loaded_config
             .brew

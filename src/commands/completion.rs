@@ -10,7 +10,7 @@ use clap_complete::{
 use std::io;
 use tokio::task;
 
-use crate::{commands::Runnable, config::Config};
+use crate::{commands::Runnable, context::AppContext};
 
 /// Represents the shell types to generate completions for.
 #[derive(Copy, Clone, PartialEq, Eq, clap::ValueEnum, Debug)]
@@ -35,7 +35,7 @@ impl Runnable for CompletionCmd {
         false
     }
 
-    async fn run(&self, _: &Config) -> Result<()> {
+    async fn run(&self, _: &AppContext) -> Result<()> {
         let shell = self.shell;
         task::spawn_blocking(move || -> Result<()> {
             let mut cmd = crate::cli::Args::command();
