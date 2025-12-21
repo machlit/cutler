@@ -10,7 +10,6 @@ use toml_edit::Value as EditValue;
 /// Serializable representation of a preference value.
 /// This mirrors the structure of `defaults_rs::PrefValue` but implements Serialize/Deserialize.
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
-#[serde(untagged)]
 pub enum SerializablePrefValue {
     String(String),
     Integer(i64),
