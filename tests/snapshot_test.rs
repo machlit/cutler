@@ -258,7 +258,7 @@ mod tests {
                 {
                     "domain": "com.apple.dock",
                     "key": "tilesize",
-                    "original_value": {"Integer": 42}
+                    "original_value": 48
                 }
             ]
         }"#;
@@ -273,13 +273,9 @@ mod tests {
         assert_eq!(loaded_snapshot.settings.len(), 1);
         assert_eq!(loaded_snapshot.settings[0].domain, "com.apple.dock");
         assert_eq!(loaded_snapshot.settings[0].key, "tilesize");
-
-        let mut dict = HashMap::new();
-        dict.insert("Integer".to_string(), SerializablePrefValue::Integer(42));
-
         assert_eq!(
             loaded_snapshot.settings[0].original_value,
-            Some(SerializablePrefValue::Dictionary(dict))
+            Some(SerializablePrefValue::Integer(48))
         );
 
         // Verify default values were set for missing fields
