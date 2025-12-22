@@ -64,6 +64,8 @@ cutler apply
 
 The `apply` command has multiple functionalities which happen alongside of applying the preferences. You may execute `cutler apply -h` or append the `--help` flag to see all the different options, or just read the cookbook.
 
+> **TIP:** This command may have multiple interactions with other commands (e.g. `cutler apply --brew` for also installing Homebrew apps/tools later on in the book), so it is suggested to read all references before using in order to fully utilize the structure.
+
 To compare your system with your configuration and see what needs to be done, run:
 
 ```sh

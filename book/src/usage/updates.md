@@ -1,7 +1,5 @@
 # Updating cutler
 
-> Please note that this only works **if you have installed cutler manually.**
-
 To check for updates, run:
 
 ```sh
@@ -13,3 +11,5 @@ To upgrade cutler, run:
 ```sh
 cutler self-update
 ```
+
+> **NOTE:** The `self-update` command only works if you have manually installed the program or have used the self-install script to do so.

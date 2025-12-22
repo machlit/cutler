@@ -4,33 +4,31 @@ There are some nifty features built into the software for your convenience. Thes
 
 ## Config-Locking
 
-When you run cutler init, the configuration file will usually contain this key-value pair at the very top:
+> **WARNING:** This feature is **still under development** and changes will be made to alter parts of its functionality in later releases, so be sure to stay alert before you use it in your everyday configuration.
+
+If you want to prevent yourself/others from repeatedly applying your configuration, you can run the following command:
+
+```bash
+$ cutler lock
+```
+
+This will append the following line to the config:
 
 ```toml
-# ~/.config/cutler/config.toml
-
 lock = true
-...
 ```
 
-Unless you remove it, this will happen:
+This is a **soft-lock** of cutler's configuration, which prevents you from using the commands which alter your system preferences.
 
-```sh
-$ cutler apply
-ERR   The config file is locked. Run `cutler unlock` to unlock.
-$
-```
+Some commands which are disabled by locking the config include:
+- `apply`
+- `unapply`
+- `reset`
+- `config` (prevents edits)
+- ... and so on.
 
-You can use this feature to mark configurations as potentially unsafe to apply. cutler uses it to generate new configuration files for you so that you don't accidentally apply the sample.
+To unlock it:
 
-From your terminal, it's also as easy to lock:
-
-```sh
-cutler lock
-```
-
-and, to unlock:
-
-```sh
-cutler unlock
+```bash
+$ cutler unlock
 ```
