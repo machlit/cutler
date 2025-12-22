@@ -52,4 +52,3 @@ The list of commands which do not auto-sync the configuration is given below:
 - `lock`
 - `reset`
 - `self-update`
-- `unapply`
