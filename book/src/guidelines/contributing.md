@@ -1,8 +1,8 @@
-# Contribution Guidelines
+# Contribution guidelines
 
 This is the standard contribution/development guidelines for the project. You may follow these to get a hold of the project quickly.
 
-## Table of Contents
+## Table of contents
 
 - [Requirements](#requirements)
 - [Production Workflow](#production-workflow)
@@ -18,7 +18,7 @@ The prerequisites are as follows:
 
 I would personally recommend using the latest Rust version available. As of now, I'm using Rust **v1.90** as my version.
 
-### Cloning the Repository
+### Cloning the repository
 
 Once you have ensured the prerequisites, fork the repository [from here](https://github.com/machlit/cutler/fork) and clone it using the following command:
 
@@ -32,14 +32,14 @@ $ git clone git@github.com:<username>/cutler.git
 
 Replace `<username>` with your GitHub username.
 
-### Required Rust Components
+### Required Rust components
 
 Make sure your environment has these tools (NOTE: This list can change based on what currently suits the project).
 
 - [clippy](https://github.com/rust-lang/rust-clippy)
 - [rustfmt](https://github.com/rust-lang/rustfmt)
 
-## Production Workflow
+## Production workflow
 
 CI/CD for cutler is done using [GitHub Actions](https://docs.github.com/en/actions). You may find these workflows useful to look at:
 
@@ -50,7 +50,7 @@ CI/CD for cutler is done using [GitHub Actions](https://docs.github.com/en/actio
 
 > The unit tests in the CI workflow are done using an **Apple Silicon M1 (3-core)** runner provided by GitHub Actions. See [this page](https://docs.github.com/en/actions/using-github-hosted-runners/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources) in GitHub's documentation for more information on all the runners. If the runners used in this project get outdated and don't get a bump, you may suggest one through [GitHub Issues](https://github.com/machlit/cutler/issues/new).
 
-### Build Reproduction
+### Build reproduction
 
 You can easily create a release build for cutler using the following command:
 
@@ -62,7 +62,7 @@ The major part of the release automation is currently done with [GitHub Actions]
 
 The unit testing is done via [this workflow.](https://github.com/machlit/cutler/blob/master/.github/workflows/tests.yml)
 
-### Code Formatting
+### Code formatting
 
 The project uses core Rust tools to format and prettify the codebase:
 
@@ -74,7 +74,7 @@ cargo fmt --all
 cargo clippy --fix
 ```
 
-## Pull Request Guidelines
+## Pull request guidelines
 
 Before submitting a pull request, please ensure the following:
 

@@ -10,7 +10,7 @@
 
 This book, by name, wants to introduce you with <code>cutler</code>, a software made to declaratively manage your macOS preferences and essentials. It can do a number of things. This book will help you navigate all of them, including new ones which are currently in development.
 
-## Basic Directions
+## Basic directions
 
 When you follow along the book, you'll notice both command and code snippets as examples, showing you certain behavior. If the command is prefixed with a `$`, it may mean that you may need to only "follow" the structure
 instead of just copy-pasting it. Other times, you can freely do so *if* the criterias specified are met.
@@ -23,7 +23,7 @@ While using macOS, I have come to realize that most solutions like [Nix](https:/
 
 And that's how <code>cutler</code> came to be.
 
-## Project Links
+## Project links
 
 There are some additional links that you may want to keep tabs on:
 

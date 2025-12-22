@@ -1,4 +1,4 @@
-# Shell Integrations
+# Shell integrations
 
 ## Completions
 

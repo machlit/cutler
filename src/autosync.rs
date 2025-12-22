@@ -1,31 +1,12 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-use crate::cli::Command;
-use crate::cli::args::BrewSubcmd;
 use crate::config::Config;
 use crate::config::remote::RemoteConfigManager;
 use crate::{log_err, log_info, log_warn};
 
 /// Perform remote config auto-sync if enabled in [remote] and internet is available.
 /// This should be called early in `main()`.
-pub async fn try_auto_sync(command: &crate::cli::Command, config: &Config) {
-    match command {
-        Command::Fetch(_)
-        | Command::Brew {
-            command: BrewSubcmd::Backup(_),
-        }
-        | Command::SelfUpdate(_)
-        | Command::CheckUpdate(_)
-        | Command::Cookbook(_)
-        | Command::Completion(_)
-        | Command::Reset(_)
-        | Command::Init(_)
-        | Command::Config(_) => {
-            return;
-        }
-        _ => {}
-    }
-
+pub async fn try_auto_sync(config: &Config) {
     if let Ok(local_config) = config.load(true).await {
         let remote = local_config.remote.clone().unwrap_or_default();
         let remote_mgr = RemoteConfigManager::new(remote.url);

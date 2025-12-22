@@ -6,7 +6,7 @@ use clap::Args;
 
 use crate::{
     cli::atomic::should_dry_run,
-    commands::Runnable,
+    commands::{Runnable, RunnableInvokeRules},
     config::remote::RemoteConfigManager,
     context::AppContext,
     log_cute, log_dry, log_warn,
@@ -25,8 +25,11 @@ pub struct FetchCmd {
 
 #[async_trait]
 impl Runnable for FetchCmd {
-    fn needs_sudo(&self) -> bool {
-        false
+    fn get_invoke_rules(&self) -> RunnableInvokeRules {
+        RunnableInvokeRules {
+            do_config_autosync: false,
+            require_sudo: false,
+        }
     }
 
     async fn run(&self, ctx: &AppContext) -> Result<()> {

@@ -7,7 +7,7 @@ use defaults_rs::{Domain, PrefValue, Preferences};
 
 use crate::{
     cli::atomic::should_dry_run,
-    commands::{ResetCmd, Runnable},
+    commands::{ResetCmd, Runnable, RunnableInvokeRules},
     context::AppContext,
     domains::convert::serializable_to_prefvalue,
     log_cute, log_dry, log_err, log_info, log_warn,
@@ -22,8 +22,11 @@ pub struct UnapplyCmd;
 
 #[async_trait]
 impl Runnable for UnapplyCmd {
-    fn needs_sudo(&self) -> bool {
-        false
+    fn get_invoke_rules(&self) -> RunnableInvokeRules {
+        RunnableInvokeRules {
+            do_config_autosync: true,
+            require_sudo: false,
+        }
     }
 
     async fn run(&self, ctx: &AppContext) -> Result<()> {

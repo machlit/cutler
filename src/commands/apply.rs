@@ -4,7 +4,7 @@ use std::collections::{HashMap, HashSet};
 
 use crate::{
     cli::atomic::should_dry_run,
-    commands::{BrewInstallCmd, Runnable},
+    commands::{BrewInstallCmd, Runnable, RunnableInvokeRules},
     config::remote::RemoteConfigManager,
     context::AppContext,
     domains::{
@@ -65,8 +65,11 @@ struct PreferenceJob {
 
 #[async_trait]
 impl Runnable for ApplyCmd {
-    fn needs_sudo(&self) -> bool {
-        false
+    fn get_invoke_rules(&self) -> RunnableInvokeRules {
+        RunnableInvokeRules {
+            do_config_autosync: true,
+            require_sudo: false,
+        }
     }
 
     async fn run(&self, ctx: &AppContext) -> Result<()> {

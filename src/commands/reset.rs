@@ -8,7 +8,7 @@ use tokio::fs;
 
 use crate::{
     cli::atomic::should_dry_run,
-    commands::Runnable,
+    commands::{Runnable, RunnableInvokeRules},
     context::AppContext,
     domains::{collect, core::get_effective_sys_domain_key, read_current},
     log_cute, log_dry, log_err, log_info, log_warn,
@@ -20,8 +20,11 @@ pub struct ResetCmd;
 
 #[async_trait]
 impl Runnable for ResetCmd {
-    fn needs_sudo(&self) -> bool {
-        false
+    fn get_invoke_rules(&self) -> RunnableInvokeRules {
+        RunnableInvokeRules {
+            do_config_autosync: false,
+            require_sudo: false,
+        }
     }
 
     async fn run(&self, ctx: &AppContext) -> Result<()> {

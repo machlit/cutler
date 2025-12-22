@@ -10,7 +10,10 @@ use clap_complete::{
 use std::io;
 use tokio::task;
 
-use crate::{commands::Runnable, context::AppContext};
+use crate::{
+    commands::{Runnable, RunnableInvokeRules},
+    context::AppContext,
+};
 
 /// Represents the shell types to generate completions for.
 #[derive(Copy, Clone, PartialEq, Eq, clap::ValueEnum, Debug)]
@@ -31,8 +34,11 @@ pub struct CompletionCmd {
 
 #[async_trait]
 impl Runnable for CompletionCmd {
-    fn needs_sudo(&self) -> bool {
-        false
+    fn get_invoke_rules(&self) -> RunnableInvokeRules {
+        RunnableInvokeRules {
+            do_config_autosync: false,
+            require_sudo: false,
+        }
     }
 
     async fn run(&self, _: &AppContext) -> Result<()> {

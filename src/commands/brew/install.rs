@@ -11,7 +11,7 @@ use crate::{
         types::BrewDiff,
     },
     cli::atomic::{should_be_quiet, should_dry_run},
-    commands::Runnable,
+    commands::{Runnable, RunnableInvokeRules},
     context::AppContext,
     log_cute, log_dry, log_err, log_info, log_warn,
 };
@@ -21,8 +21,11 @@ pub struct BrewInstallCmd;
 
 #[async_trait]
 impl Runnable for BrewInstallCmd {
-    fn needs_sudo(&self) -> bool {
-        false
+    fn get_invoke_rules(&self) -> RunnableInvokeRules {
+        RunnableInvokeRules {
+            do_config_autosync: true,
+            require_sudo: false,
+        }
     }
 
     async fn run(&self, ctx: &AppContext) -> Result<()> {

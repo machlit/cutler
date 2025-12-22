@@ -7,7 +7,11 @@ use self_update::{backends::github::Update, cargo_crate_version};
 use std::env;
 use tokio::fs;
 
-use crate::{commands::Runnable, context::AppContext, log_cute, log_warn};
+use crate::{
+    commands::{Runnable, RunnableInvokeRules},
+    context::AppContext,
+    log_cute, log_warn,
+};
 
 #[derive(Args, Debug)]
 pub struct SelfUpdateCmd {
@@ -18,8 +22,11 @@ pub struct SelfUpdateCmd {
 
 #[async_trait]
 impl Runnable for SelfUpdateCmd {
-    fn needs_sudo(&self) -> bool {
-        true
+    fn get_invoke_rules(&self) -> RunnableInvokeRules {
+        RunnableInvokeRules {
+            do_config_autosync: false,
+            require_sudo: true,
+        }
     }
 
     async fn run(&self, _: &AppContext) -> Result<()> {

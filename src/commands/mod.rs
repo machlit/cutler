@@ -47,7 +47,14 @@ pub trait Runnable {
     /// often propagate an error upto the root error handler.
     async fn run(&self, ctx: &AppContext) -> Result<()>;
 
-    /// Returns if the command requires sudo privileges or not.
-    /// This should always be implemented by the command.
-    fn needs_sudo(&self) -> bool;
+    /// Returns a set of governing rules for a Runnable to be run properly.
+    fn get_invoke_rules(&self) -> RunnableInvokeRules;
+}
+
+/// Struct to declare execution rules for the Runnable trait.
+pub struct RunnableInvokeRules {
+    /// Whether to autosync configuration with cloud before command invocation.
+    pub do_config_autosync: bool,
+    /// Whether the command requires sudo privileges for execution.
+    pub require_sudo: bool,
 }

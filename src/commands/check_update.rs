@@ -10,7 +10,7 @@ use semver::Version;
 
 use crate::{
     cli::atomic::should_be_quiet,
-    commands::Runnable,
+    commands::{Runnable, RunnableInvokeRules},
     context::AppContext,
     log_cute, log_info,
     util::logging::{BOLD, RESET},
@@ -21,8 +21,11 @@ pub struct CheckUpdateCmd;
 
 #[async_trait]
 impl Runnable for CheckUpdateCmd {
-    fn needs_sudo(&self) -> bool {
-        false
+    fn get_invoke_rules(&self) -> RunnableInvokeRules {
+        RunnableInvokeRules {
+            do_config_autosync: false,
+            require_sudo: false,
+        }
     }
 
     async fn run(&self, _: &AppContext) -> Result<()> {

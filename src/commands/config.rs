@@ -10,7 +10,7 @@ use tokio::fs;
 
 use crate::{
     cli::atomic::{should_be_quiet, should_dry_run},
-    commands::Runnable,
+    commands::{Runnable, RunnableInvokeRules},
     context::AppContext,
     log_cute, log_dry, log_info,
 };
@@ -20,8 +20,11 @@ pub struct ConfigCmd;
 
 #[async_trait]
 impl Runnable for ConfigCmd {
-    fn needs_sudo(&self) -> bool {
-        false
+    fn get_invoke_rules(&self) -> RunnableInvokeRules {
+        RunnableInvokeRules {
+            do_config_autosync: false,
+            require_sudo: false,
+        }
     }
 
     async fn run(&self, ctx: &AppContext) -> Result<()> {

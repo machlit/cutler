@@ -1,4 +1,4 @@
-# Basics & System Settings
+# Basics & system settings
 
 ## Syntax
 
@@ -29,7 +29,7 @@ $ defaults write com.apple.dock "tilesize" -int "46"
 $ defaults write com.apple.menuextra.clock "FlashDateSeparators" -bool true
 ```
 
-## Global Preferences
+## Global preferences
 
 You can also configure global preferences like this:
 
@@ -54,7 +54,7 @@ $ defaults write NSGlobalDomain "ApplePressAndHoldEnabled" -bool true
 $ defaults write NSGlobalDomain com.apple.mouse.linear -bool true
 ```
 
-## Applying & Undoing
+## Applying & undoing
 
 Once you're ready, run this command to apply everything:
 
@@ -78,7 +78,7 @@ Unapplying everything is also as easy. Run the command below and cutler will res
 cutler unapply
 ```
 
-## Action Hints
+## Action hints
 
 The fun part about using cutler is, it will mostly tell you to take certain actions based on what command you are using, without you having to think about it. This is due to cutler's immense synchronization between commands.
 
@@ -95,7 +95,7 @@ $
 
 As you can see, it suggests me to run `cutler apply`. Running the suggested command will only affect the changed portion of the preferences, and cutler will skip the rest.
 
-## Risky Operations
+## Risky operations
 
 If you would like to write non-existent domains (create them) using cutler, use the `--no-dom-check` flag:
 

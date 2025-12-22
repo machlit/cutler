@@ -1,4 +1,4 @@
-# Homebrew Backups
+# Homebrew backups
 
 If you're a person who struggles to keep tabs on all the installed formulae or apps using [Homebrew](https://brew.sh), then cutler could be a great choice for you!
 
@@ -66,7 +66,7 @@ The structure of the `brew` table inside cutler's configuration is like such:
 
 While running this command, cutler will also notify you about any extra software which is untracked by it. Then, you can run `cutler brew backup` again to sync.
 
-## Backend Requirements (Optional)
+## Backend requirements (optional)
 
 Obviously, running Homebrew on a Mac requires the **Xcode Command-Line Tools** to be installed, let it be through Xcode itself or through
 the preincluded utility in macOS. By default, cutler will try to ensure that it is there, before executing any of the subprocesses.

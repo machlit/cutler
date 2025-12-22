@@ -12,7 +12,7 @@ cutler init
 Once you run this command, you will get a copy of [this starter template](https://github.com/machlit/cutler/blob/master/examples/complete.toml) in the
 configuration path.
 
-## Configuration Paths
+## Configuration paths
 
 The path defaults to `$HOME/.config/cutler/config.toml` but can
 be set anywhere within these locations:

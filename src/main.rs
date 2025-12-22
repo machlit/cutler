@@ -35,18 +35,19 @@ async fn main() {
         }
     };
 
-    // remote config auto-sync logic
+    // retrieve Runnable from command instance
+    let runnable: &dyn Runnable = args.command.as_runnable();
+    let rules = runnable.get_invoke_rules();
+
+    // run remote-sync if command respects
     if args.no_sync {
         log_info!("Skipping remote config autosync.");
-    } else {
-        try_auto_sync(&args.command, &ctx.config).await;
+    } else if rules.do_config_autosync {
+        try_auto_sync(&ctx.config).await;
     }
 
-    // command invocation (for real this time)
-    let runnable: &dyn Runnable = args.command.as_runnable();
-
     // sudo protection
-    if let Err(e) = if runnable.needs_sudo() {
+    if let Err(e) = if rules.require_sudo {
         run_with_root().await
     } else {
         run_with_noroot()

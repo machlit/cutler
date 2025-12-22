@@ -5,7 +5,7 @@ use crate::{
         core::{brew_is_installed, diff_brew},
         types::BrewDiff,
     },
-    commands::Runnable,
+    commands::{Runnable, RunnableInvokeRules},
     context::AppContext,
     domains::{
         collect,
@@ -29,8 +29,11 @@ pub struct StatusCmd {
 
 #[async_trait]
 impl Runnable for StatusCmd {
-    fn needs_sudo(&self) -> bool {
-        false
+    fn get_invoke_rules(&self) -> RunnableInvokeRules {
+        RunnableInvokeRules {
+            do_config_autosync: true,
+            require_sudo: false,
+        }
     }
 
     async fn run(&self, ctx: &AppContext) -> Result<()> {

@@ -1,8 +1,8 @@
-# Configuration Features
+# Configuration features
 
 There are some nifty features built into the software for your convenience. These configuration features have been documented below so that you can have a quick look:
 
-## Config-Locking
+## Config-locking
 
 > **WARNING:** This feature is **still under development** and changes will be made to alter parts of its functionality in later releases, so be sure to stay alert before you use it in your everyday configuration.
 

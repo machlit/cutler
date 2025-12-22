@@ -1,4 +1,4 @@
-# System Preferences Backend
+# System preferences backend
 
 ## defaults-rs
 
@@ -9,7 +9,7 @@ It communicates with the preferences daemon through the CoreFoundation API bindi
 
 You can view the source of the backend through the given links below. Consider contributing to make it even better for everyone!
 
-## Project Links
+## Project links
 
 - [GitHub](https://github.com/machlit/defaults-rs)
 - [Documentation](https://machlit.github.io/defaults-rs)

@@ -4,15 +4,22 @@ use anyhow::Result;
 use async_trait::async_trait;
 use clap::Args;
 
-use crate::{commands::Runnable, context::AppContext, util::io::open};
+use crate::{
+    commands::{Runnable, RunnableInvokeRules},
+    context::AppContext,
+    util::io::open,
+};
 
 #[derive(Args, Debug)]
 pub struct CookbookCmd;
 
 #[async_trait]
 impl Runnable for CookbookCmd {
-    fn needs_sudo(&self) -> bool {
-        false
+    fn get_invoke_rules(&self) -> RunnableInvokeRules {
+        RunnableInvokeRules {
+            do_config_autosync: false,
+            require_sudo: false,
+        }
     }
 
     async fn run(&self, _: &AppContext) -> Result<()> {

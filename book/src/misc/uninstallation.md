@@ -2,7 +2,7 @@
 
 Obviously, cutler is still an experimental software in heavy development, so if you would like to uninstall it, please follow these steps:
 
-## For Script Installs
+## For script installs
 
 Run this command in your terminal:
 
@@ -10,7 +10,7 @@ Run this command in your terminal:
 curl -fsSL https://machlit.github.io/cutler/uninstall.sh | /bin/bash
 ```
 
-## For Package Manager Installs
+## For package manager installs
 
 If you have installed cutler through a package manager, please follow the instructions that match your configuration:
 

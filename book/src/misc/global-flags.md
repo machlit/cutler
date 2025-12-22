@@ -1,4 +1,4 @@
-# Global Flags
+# Global flags
 
 cutler supports several global flags that can be used with any command:
 

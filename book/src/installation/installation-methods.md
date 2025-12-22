@@ -1,4 +1,4 @@
-# Installation
+# Installation methods
 
 You can install cutler by directly running this command in the terminal:
 

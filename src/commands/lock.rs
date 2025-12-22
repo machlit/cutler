@@ -6,8 +6,11 @@ use clap::Args;
 use anyhow::{Result, bail};
 
 use crate::{
-    cli::atomic::should_dry_run, commands::Runnable, config::ConfigCoreMethods,
-    context::AppContext, log_dry,
+    cli::atomic::should_dry_run,
+    commands::{Runnable, RunnableInvokeRules},
+    config::ConfigCoreMethods,
+    context::AppContext,
+    log_dry,
 };
 
 #[derive(Debug, Args)]
@@ -15,8 +18,11 @@ pub struct LockCmd;
 
 #[async_trait]
 impl Runnable for LockCmd {
-    fn needs_sudo(&self) -> bool {
-        true
+    fn get_invoke_rules(&self) -> RunnableInvokeRules {
+        RunnableInvokeRules {
+            do_config_autosync: false,
+            require_sudo: true,
+        }
     }
 
     async fn run(&self, ctx: &AppContext) -> Result<()> {

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 
-use crate::commands::Runnable;
+use crate::commands::{Runnable, RunnableInvokeRules};
 
 use crate::context::AppContext;
 use crate::exec::{ExecMode, run_all, run_one};
@@ -25,8 +25,11 @@ pub struct ExecCmd {
 
 #[async_trait]
 impl Runnable for ExecCmd {
-    fn needs_sudo(&self) -> bool {
-        false
+    fn get_invoke_rules(&self) -> RunnableInvokeRules {
+        RunnableInvokeRules {
+            do_config_autosync: true,
+            require_sudo: false,
+        }
     }
 
     async fn run(&self, ctx: &AppContext) -> Result<()> {

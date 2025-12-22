@@ -5,15 +5,23 @@ use async_trait::async_trait;
 use clap::Args;
 use tokio::fs;
 
-use crate::{commands::Runnable, context::AppContext, log_cute, log_warn, util::io::confirm};
+use crate::{
+    commands::{Runnable, RunnableInvokeRules},
+    context::AppContext,
+    log_cute, log_warn,
+    util::io::confirm,
+};
 
 #[derive(Args, Debug)]
 pub struct InitCmd;
 
 #[async_trait]
 impl Runnable for InitCmd {
-    fn needs_sudo(&self) -> bool {
-        false
+    fn get_invoke_rules(&self) -> RunnableInvokeRules {
+        RunnableInvokeRules {
+            do_config_autosync: false,
+            require_sudo: false,
+        }
     }
 
     async fn run(&self, ctx: &AppContext) -> Result<()> {
