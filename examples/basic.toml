@@ -1,5 +1,5 @@
-# Remove the line below to activate this configuration.
-lock = true
+# Remove the line below to enable activating this configuration.
+template = true
 
 [set.finder]
 AppleShowAllFiles = true
@@ -16,5 +16,5 @@ autohide-delay = 0
 autohide-time-modifier = 0.6
 expose-group-apps = true
 
-[set.NSGlobalDomain.com.apple.keyboard]
-fnState = false
+[set.NSGlobalDomain]
+"com.apple.keyboard.fnState" = false

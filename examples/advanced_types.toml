@@ -1,5 +1,8 @@
+# Remove the line below to enable activating this configuration.
+template = true
+
 # Example configuration showing advanced type support
-# This demonstrates the new inline table and complex type handling
+# This demonstrates the new inline table and complex type handling.
 
 [set.dock]
 tilesize = 50

@@ -16,6 +16,7 @@ mod tests {
         command: Option<HashMap<String, Command>>,
     ) -> LoadedConfig {
         LoadedConfig {
+            template: None,
             lock: None,
             set: None,
             vars,

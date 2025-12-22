@@ -19,6 +19,7 @@ use toml_edit::DocumentMut;
 #[serde(deny_unknown_fields)]
 pub struct LoadedConfig {
     pub lock: Option<bool>,
+    pub template: Option<bool>,
     pub set: Option<HashMap<String, HashMap<String, Value>>>,
     pub vars: Option<HashMap<String, String>>,
     pub command: Option<HashMap<String, Command>>,
@@ -77,23 +78,35 @@ impl Config {
 
     #[must_use]
     pub fn is_loadable(&self) -> bool {
-        !self.path.as_os_str().is_empty() && self.path.try_exists().unwrap_or(false)
+        !self.path.as_os_str().is_empty() && self.path.try_exists().unwrap_or_default()
+    }
+
+    fn lock_check(config: &LoadedConfig) -> Result<()> {
+        if config.template.unwrap_or_default() {
+            bail!(
+                "This is a template configuration. Cannot use till `template = true` is removed from config."
+            )
+        } else if config.lock.unwrap_or_default() {
+            bail!("Config is locked. Run `cutler unlock` to unlock.")
+        }
+
+        Ok(())
     }
 
     /// Loads the configuration. Errors out if the configuration is not loadable
     /// (decided by `.is_loadable()`).
-    pub async fn load(&self, not_if_locked: bool) -> Result<LoadedConfig> {
+    pub async fn load(&self, enforce_lock: bool) -> Result<LoadedConfig> {
         if self.is_loadable() {
             let data = fs::read_to_string(&self.path).await?;
 
             let mut config: LoadedConfig =
                 toml::from_str(&data).context("Failed to parse config data from valid TOML.")?;
+            config.path = self.path.to_owned();
 
-            if config.lock.unwrap_or_default() && not_if_locked {
-                bail!("Config is locked. Run `cutler unlock` to unlock.")
+            if enforce_lock {
+                Self::lock_check(&config)?
             }
 
-            config.path = self.path.to_owned();
             Ok(config)
         } else {
             bail!("Config path does not exist!")
@@ -101,14 +114,14 @@ impl Config {
     }
 
     /// Loads config as mutable `DocumentMut`. Useful for in-place editing of values.
-    pub async fn load_as_mut(&self, not_if_locked: bool) -> Result<DocumentMut> {
+    pub async fn load_as_mut(&self, enforce_lock: bool) -> Result<DocumentMut> {
         if self.is_loadable() {
             let data = fs::read_to_string(&self.path).await?;
             let config: LoadedConfig =
                 toml::from_str(&data).context("Failed to parse config data from valid TOML.")?;
 
-            if config.lock.unwrap_or_default() && not_if_locked {
-                bail!("Config is locked. Run `cutler unlock` to unlock.")
+            if enforce_lock {
+                Self::lock_check(&config)?
             }
 
             let doc = data.parse::<DocumentMut>()?;

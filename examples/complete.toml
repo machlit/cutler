@@ -1,5 +1,5 @@
-# Remove the line below to activate this configuration.
-lock = true
+# Remove the line below to enable activating this configuration.
+template = true
 
 # This is a starter configuration.
 # If you want to explore what each section of the configuration does in detail,
