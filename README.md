@@ -74,7 +74,7 @@ curl -fsSL https://machlit.github.io/cutler/install.sh | /bin/bash
 ### Using Homebrew
 
 ```bash
-brew install hitblast/tap/cutler
+brew install machlit/tap/cutler
 ```
 
 ### Using cargo
