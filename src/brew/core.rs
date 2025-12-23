@@ -44,7 +44,7 @@ async fn set_homebrew_env_vars() {
 /// Helper for: `ensure_brew()`
 /// Installs Homebrew via the official script.
 async fn install_homebrew() -> Result<()> {
-    /// TODO: this shouldn't be the optimal way for asking permissions
+    // TODO: this shouldn't be the optimal way for asking permissions
     let primary_status = Command::new("sudo")
         .args([
             "echo",
