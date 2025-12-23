@@ -48,7 +48,7 @@ async fn install_homebrew() -> Result<()> {
     let primary_status = Command::new("sudo")
         .args([
             "echo",
-            "\"Granted sudo permissions for this session (required for Homebrew).\"",
+            "Granted sudo permissions for this session (required for Homebrew non-interactive install).",
         ])
         .status()
         .await?;
@@ -161,7 +161,7 @@ pub async fn diff_brew(brew_cfg: Brew) -> Result<BrewDiff> {
     let (mut installed_formulae, installed_casks, installed_taps) = try_join!(
         brew_list(BrewListType::Formula),
         brew_list(BrewListType::Cask),
-        brew_list(BrewListType::Tap) // no need for flattening here
+        brew_list(BrewListType::Tap)
     )?;
 
     // omit installed as dependency

@@ -1,4 +1,3 @@
 ## ✨
 
-- A new, optional `template = <bool>` field has been added to the config. As cutler migrates away from hardcoded locks on config to more system-oriented, hardened config locks, this new field will only be used to softlock example configurations provided by the repository.
-- Autosync rules have been changed for some commands. This change has been reflected on in the cookbook/documentation.
+- **Critical bug fix:** Homebrew install sequence previously failed due to the lack of TTY inside cutler's environment. PTY should be implemented later on but for now a small glue fix has been added to address this issue.
