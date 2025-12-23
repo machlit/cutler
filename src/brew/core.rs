@@ -44,8 +44,19 @@ async fn set_homebrew_env_vars() {
 /// Helper for: `ensure_brew()`
 /// Installs Homebrew via the official script.
 async fn install_homebrew() -> Result<()> {
-    let install_command =
-        "curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | /bin/bash";
+    let primary_status = Command::new("sudo")
+        .args([
+            "echo",
+            "\"Granted sudo permissions for this session (required for Homebrew).\"",
+        ])
+        .status()
+        .await?;
+
+    if !primary_status.success() {
+        bail!("Authorization is needed for installing Homebrew.")
+    }
+
+    let install_command = "NONINTERACTIVE=1 curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh | /bin/bash";
 
     let status = Command::new("/bin/bash")
         .arg("-c")
