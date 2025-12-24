@@ -52,6 +52,18 @@ pub struct ApplyCmd {
     /// Invoke `brew install` after applying preferences.
     #[arg(short, long)]
     brew: bool,
+
+    /// When invoking `brew install`, pass the `--force` flag for formula/cask installs.
+    #[arg(long)]
+    brew_force: bool,
+
+    /// When invoking `brew install`, skip cask installs.
+    #[arg(long)]
+    brew_skip_cask: bool,
+
+    /// When invoking `brew install`, skip formula installs.
+    #[arg(long)]
+    brew_skip_formula: bool,
 }
 
 /// Represents a preference modification job.
@@ -263,7 +275,13 @@ impl Runnable for ApplyCmd {
 
         // run brew
         if self.brew {
-            BrewInstallCmd.run(ctx).await?;
+            BrewInstallCmd {
+                force: self.brew_force,
+                skip_cask: self.brew_skip_cask,
+                skip_formulae: self.brew_skip_formula,
+            }
+            .run(ctx)
+            .await?;
         }
 
         // exec external commands
