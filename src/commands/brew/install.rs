@@ -145,22 +145,20 @@ async fn install_all(install_tasks: Vec<String>, force: bool, cask: bool) -> any
     log_info!("Installing {task}...");
 
     let status = if force {
-        let stat = Command::new("brew")
+        Command::new("brew")
             .arg("install")
-            .arg(&format!("--{task}"))
+            .arg(format!("--{task}"))
             .arg("--force")
             .args(install_tasks)
             .status()
-            .await?;
-        stat
+            .await?
     } else {
-        let stat = Command::new("brew")
+        Command::new("brew")
             .arg("install")
-            .arg(&format!("--{task}"))
+            .arg(format!("--{task}"))
             .args(install_tasks)
             .status()
-            .await?;
-        stat
+            .await?
     };
 
     if !status.success() {
