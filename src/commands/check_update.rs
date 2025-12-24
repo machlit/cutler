@@ -9,7 +9,6 @@ use reqwest;
 use semver::Version;
 
 use crate::{
-    cli::atomic::should_be_quiet,
     commands::{Runnable, RunnableInvokeRules},
     context::AppContext,
     log_cute, log_info,
@@ -69,11 +68,8 @@ impl Runnable for CheckUpdateCmd {
 
         match current.cmp(&latest) {
             Ordering::Less => {
-                if should_be_quiet() {
-                    log_cute!("Update available!");
-                } else {
-                    println!(
-                        r"
+                println!(
+                    r"
 {BOLD}Update available:{RESET} {current_version} → {latest_version}
 
 To update, run one of the following:
@@ -85,8 +81,7 @@ To update, run one of the following:
 
 Or download the latest release from:
 https://github.com/machlit/cutler/releases"
-                    );
-                }
+                );
             }
             Ordering::Equal => {
                 log_cute!("You are using the latest version.");

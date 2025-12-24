@@ -13,7 +13,7 @@ use crate::{
     cli::atomic::should_dry_run,
     commands::{Runnable, RunnableInvokeRules},
     context::AppContext,
-    log_dry, log_err, log_info, log_warn,
+    log_cute, log_dry, log_err, log_info, log_warn,
 };
 
 #[derive(Debug, Args)]
@@ -28,7 +28,7 @@ pub struct BrewInstallCmd {
 
     /// Skip formula installs.
     #[arg(long)]
-    pub skip_formulae: bool,
+    pub skip_formula: bool,
 }
 
 #[async_trait]
@@ -104,13 +104,13 @@ impl Runnable for BrewInstallCmd {
             log_info!("No taps to initialize.")
         }
 
-        if !brew_diff.missing_formulae.is_empty() && !self.skip_formulae {
+        if !brew_diff.missing_formulae.is_empty() && !self.skip_formula {
             if dry_run {
                 brew_diff.missing_formulae.iter().for_each(|formula| {
                     log_dry!("Would install formula: {formula}");
                 });
             } else {
-                install_all(brew_diff.missing_formulae, false).await?;
+                install_all(brew_diff.missing_formulae, self.force, false).await?;
             }
         } else {
             log_info!("Skipping formulae install.")
@@ -122,11 +122,13 @@ impl Runnable for BrewInstallCmd {
                     log_dry!("Would install cask: {formula}");
                 });
             } else {
-                install_all(brew_diff.missing_casks, true).await?;
+                install_all(brew_diff.missing_casks, self.force, true).await?;
             }
         } else {
             log_info!("Skipping casks install.")
         }
+
+        log_cute!("Homebrew sync complete.");
 
         Ok(())
     }
@@ -134,7 +136,7 @@ impl Runnable for BrewInstallCmd {
 
 /// Install formulae/casks sequentially.
 /// The argument is a vector of argslices, representing the arguments to the `brew install` subcommand.
-async fn install_all(install_tasks: Vec<String>, cask: bool) -> anyhow::Result<()> {
+async fn install_all(install_tasks: Vec<String>, force: bool, cask: bool) -> anyhow::Result<()> {
     if install_tasks.is_empty() {
         return Ok(());
     }
@@ -142,12 +144,24 @@ async fn install_all(install_tasks: Vec<String>, cask: bool) -> anyhow::Result<(
     let task = if cask { "casks" } else { "formulae" };
     log_info!("Installing {task}...");
 
-    let status = Command::new("brew")
-        .arg("install")
-        .arg(&format!("--{task}"))
-        .args(install_tasks)
-        .status()
-        .await?;
+    let status = if force {
+        let stat = Command::new("brew")
+            .arg("install")
+            .arg(&format!("--{task}"))
+            .arg("--force")
+            .args(install_tasks)
+            .status()
+            .await?;
+        stat
+    } else {
+        let stat = Command::new("brew")
+            .arg("install")
+            .arg(&format!("--{task}"))
+            .args(install_tasks)
+            .status()
+            .await?;
+        stat
+    };
 
     if !status.success() {
         log_err!("Failed to install: {task}");

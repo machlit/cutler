@@ -9,7 +9,7 @@ use clap::Args;
 use tokio::fs;
 
 use crate::{
-    cli::atomic::{should_be_quiet, should_dry_run},
+    cli::atomic::should_dry_run,
     commands::{Runnable, RunnableInvokeRules},
     context::AppContext,
     log_cute, log_dry, log_info,
@@ -72,9 +72,7 @@ impl Runnable for ConfigCmd {
                 }
             }
         } else {
-            if !should_be_quiet() {
-                log_info!("Editor could not be found, opening normally:\n",);
-            }
+            log_info!("Editor could not be found, opening normally:\n",);
 
             // read and print the file
             let content = fs::read_to_string(ctx.config.path()).await?;

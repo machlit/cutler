@@ -278,7 +278,7 @@ impl Runnable for ApplyCmd {
             BrewInstallCmd {
                 force: self.brew_force,
                 skip_cask: self.brew_skip_cask,
-                skip_formulae: self.brew_skip_formula,
+                skip_formula: self.brew_skip_formula,
             }
             .run(ctx)
             .await?;
