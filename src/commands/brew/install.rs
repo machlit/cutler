@@ -7,8 +7,8 @@ use tokio::process::Command;
 
 use crate::{
     brew::{
-        core::{diff_brew, ensure_brew},
         types::BrewDiff,
+        utils::{diff_brew, ensure_brew},
     },
     cli::atomic::should_dry_run,
     commands::{Runnable, RunnableInvokeRules},

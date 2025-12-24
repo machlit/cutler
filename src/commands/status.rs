@@ -2,8 +2,8 @@
 
 use crate::{
     brew::{
-        core::{brew_is_installed, diff_brew},
         types::BrewDiff,
+        utils::{brew_is_installed, diff_brew},
     },
     commands::{Runnable, RunnableInvokeRules},
     context::AppContext,

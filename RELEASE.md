@@ -6,3 +6,4 @@
   2. `--skip-formula`: Skips formula installs.
   3. `--skip-cask`: Skips cask installs.
 - Following the three flags above, identical flags have been added with a `brew_` prefix for `cutler apply` in order to pass them to `cutler brew install`.
+- cutler now fully respects `should_be_quiet()` and it is enforced to be inside the logging module.
