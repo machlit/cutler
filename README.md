@@ -54,7 +54,7 @@ cutler is still in development and changes in functionality may be common during
 
 - [Resources](#resources)
 - [Installation](#installation)
-- [Caveats](#caveats)
+- [Goals](#goals)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -89,9 +89,17 @@ cargo install cutler
 mise use -g cargo:cutler
 ```
 
-## Caveats
+## Goals
 
-None at the moment. Previous issues with dictionary parsing for TOML & defaults-rs backend have been resolved.
+The universal goal is simple - provide a reliable way to automate the Mac setup so that you don't have to overthink about it. This consists of the following:
+
+- Reliable restoration of system preferences.
+- Reliable restoration of apps/tools using some sort of backend.
+- Customizability and authority over certain commands and other stuff.
+- Backup and restoration features for advanced things such as fonts, App Store apps.
+- ... and more which aren't noted here.
+
+These are all possible features cutler needs to stabilize in order to achieve a v1 release for now.
 
 ## Contributing
 
