@@ -1,3 +1,4 @@
 ## ✨
 
-- **Bug fix:** Previously, the `init` command would run even if the configuration had `lock = true` inside. This has been patched in this release.
+- **Bug fix:** The comparison for `no_deps` inside the `brew backup` command was previously invalid and resulted in improper dependency comparisons. This has been fixed in this release.
+- Config-locks are now handled before command execution rather than within the command.
