@@ -29,6 +29,7 @@ impl Runnable for FetchCmd {
         RunnableInvokeRules {
             do_config_autosync: false,
             require_sudo: false,
+            respect_lock: true,
         }
     }
 
@@ -36,7 +37,7 @@ impl Runnable for FetchCmd {
         let dry_run = should_dry_run();
 
         // prepare local config for comparison
-        let local_config = ctx.config.load(true).await?;
+        let local_config = ctx.config.load().await?;
 
         // parse [remote] section
         let remote_mgr = if let Some(ref remote) = local_config.remote {

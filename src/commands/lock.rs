@@ -22,6 +22,7 @@ impl Runnable for LockCmd {
         RunnableInvokeRules {
             do_config_autosync: false,
             require_sudo: true,
+            respect_lock: false,
         }
     }
 
@@ -30,7 +31,7 @@ impl Runnable for LockCmd {
             bail!("Cannot find a configuration to lock in the first place.")
         }
 
-        let mut document = ctx.config.load_as_mut(false).await?;
+        let mut document = ctx.config.load_as_mut().await?;
         let dry_run = should_dry_run();
 
         if document

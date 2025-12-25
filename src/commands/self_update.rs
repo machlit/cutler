@@ -26,6 +26,7 @@ impl Runnable for SelfUpdateCmd {
         RunnableInvokeRules {
             do_config_autosync: false,
             require_sudo: true,
+            respect_lock: false,
         }
     }
 

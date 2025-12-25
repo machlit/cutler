@@ -29,11 +29,12 @@ impl Runnable for ExecCmd {
         RunnableInvokeRules {
             do_config_autosync: true,
             require_sudo: false,
+            respect_lock: true,
         }
     }
 
     async fn run(&self, ctx: &AppContext) -> Result<()> {
-        let loaded_config = ctx.config.load(true).await?;
+        let loaded_config = ctx.config.load().await?;
 
         let mode = if self.all {
             ExecMode::All

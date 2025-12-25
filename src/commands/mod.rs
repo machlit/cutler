@@ -57,4 +57,6 @@ pub struct RunnableInvokeRules {
     pub do_config_autosync: bool,
     /// Whether the command requires sudo privileges for execution.
     pub require_sudo: bool,
+    /// Whether to respect a locked configuration file.
+    pub respect_lock: bool,
 }

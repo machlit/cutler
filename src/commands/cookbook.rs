@@ -19,6 +19,7 @@ impl Runnable for CookbookCmd {
         RunnableInvokeRules {
             do_config_autosync: false,
             require_sudo: false,
+            respect_lock: false,
         }
     }
 

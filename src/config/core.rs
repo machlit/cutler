@@ -29,6 +29,12 @@ pub struct LoadedConfig {
     pub path: PathBuf,
 }
 
+/// Struct representing a lock-field-only configuration file.
+#[derive(Deserialize, Default)]
+pub struct LockOnlyLoadedConfig {
+    pub lock: Option<bool>,
+}
+
 /// Represents the [remote] table.
 #[derive(Deserialize, PartialEq, Eq, Default, Clone, Debug)]
 #[serde(deny_unknown_fields)]
@@ -81,31 +87,32 @@ impl Config {
         !self.path.as_os_str().is_empty() && self.path.try_exists().unwrap_or_default()
     }
 
-    fn lock_check(config: &LoadedConfig) -> Result<()> {
-        if config.template.unwrap_or_default() {
-            bail!(
-                "This is a template configuration. Cannot use till `template = true` is removed from config."
-            )
-        } else if config.lock.unwrap_or_default() {
-            bail!("Config is locked. Run `cutler unlock` to unlock.")
-        }
+    /// Basic config wrapper for checking the lock state.
+    pub async fn is_locked(&self) -> bool {
+        if self.is_loadable() {
+            let data = fs::read_to_string(&self.path).await;
 
-        Ok(())
+            match data {
+                Ok(data) => {
+                    let cfg: LockOnlyLoadedConfig = toml::from_str(&data).unwrap_or_default();
+                    cfg.lock.unwrap_or_default()
+                }
+                Err(_) => false,
+            }
+        } else {
+            false
+        }
     }
 
     /// Loads the configuration. Errors out if the configuration is not loadable
     /// (decided by `.is_loadable()`).
-    pub async fn load(&self, enforce_lock: bool) -> Result<LoadedConfig> {
+    pub async fn load(&self) -> Result<LoadedConfig> {
         if self.is_loadable() {
             let data = fs::read_to_string(&self.path).await?;
 
             let mut config: LoadedConfig =
                 toml::from_str(&data).context("Failed to parse config data from valid TOML.")?;
             config.path = self.path.to_owned();
-
-            if enforce_lock {
-                Self::lock_check(&config)?
-            }
 
             Ok(config)
         } else {
@@ -114,15 +121,11 @@ impl Config {
     }
 
     /// Loads config as mutable `DocumentMut`. Useful for in-place editing of values.
-    pub async fn load_as_mut(&self, enforce_lock: bool) -> Result<DocumentMut> {
+    pub async fn load_as_mut(&self) -> Result<DocumentMut> {
         if self.is_loadable() {
             let data = fs::read_to_string(&self.path).await?;
-            let config: LoadedConfig =
+            let _: LoadedConfig =
                 toml::from_str(&data).context("Failed to parse config data from valid TOML.")?;
-
-            if enforce_lock {
-                Self::lock_check(&config)?
-            }
 
             let doc = data.parse::<DocumentMut>()?;
 

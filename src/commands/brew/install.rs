@@ -37,12 +37,13 @@ impl Runnable for BrewInstallCmd {
         RunnableInvokeRules {
             do_config_autosync: true,
             require_sudo: false,
+            respect_lock: true,
         }
     }
 
     async fn run(&self, ctx: &AppContext) -> Result<()> {
         let dry_run = should_dry_run();
-        let loaded_config = ctx.config.load(true).await?;
+        let loaded_config = ctx.config.load().await?;
 
         let brew_cfg = loaded_config
             .brew

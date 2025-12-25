@@ -81,6 +81,7 @@ impl Runnable for ApplyCmd {
         RunnableInvokeRules {
             do_config_autosync: true,
             require_sudo: false,
+            respect_lock: true,
         }
     }
 
@@ -294,7 +295,7 @@ impl Runnable for ApplyCmd {
                 ExecMode::Regular
             };
 
-            let loaded_config = ctx.config.load(true).await?;
+            let loaded_config = ctx.config.load().await?;
             let exec_run_count = run_all(loaded_config, mode).await?;
 
             if dry_run {

@@ -33,6 +33,7 @@ impl Runnable for StatusCmd {
         RunnableInvokeRules {
             do_config_autosync: true,
             require_sudo: false,
+            respect_lock: false,
         }
     }
 
@@ -130,7 +131,7 @@ impl Runnable for StatusCmd {
 
         // brew status check
         {
-            let toml_brew = (ctx.config.load(false)).await?.brew.clone();
+            let toml_brew = (ctx.config.load()).await?.brew.clone();
             let no_brew = self.no_brew;
 
             if !no_brew && let Some(brew_val) = toml_brew {

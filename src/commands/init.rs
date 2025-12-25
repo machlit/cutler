@@ -21,12 +21,13 @@ impl Runnable for InitCmd {
         RunnableInvokeRules {
             do_config_autosync: false,
             require_sudo: false,
+            respect_lock: true,
         }
     }
 
     async fn run(&self, ctx: &AppContext) -> Result<()> {
         if ctx.config.is_loadable() {
-            ctx.config.load(true).await?;
+            ctx.config.load().await?;
 
             log_warn!(
                 "Configuration file already exists at: {:?}",

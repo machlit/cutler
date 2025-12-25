@@ -24,6 +24,7 @@ impl Runnable for CheckUpdateCmd {
         RunnableInvokeRules {
             do_config_autosync: false,
             require_sudo: false,
+            respect_lock: false,
         }
     }
 

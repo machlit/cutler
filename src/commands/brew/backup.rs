@@ -33,6 +33,7 @@ impl Runnable for BrewBackupCmd {
         RunnableInvokeRules {
             do_config_autosync: false,
             require_sudo: false,
+            respect_lock: true,
         }
     }
 
@@ -44,7 +45,7 @@ impl Runnable for BrewBackupCmd {
         ensure_brew().await?;
 
         // init config
-        let mut doc = if let Ok(doc) = ctx.config.load_as_mut(true).await {
+        let mut doc = if let Ok(doc) = ctx.config.load_as_mut().await {
             doc
         } else {
             log_warn!("Configuration does not exist; a new one will be created.");
@@ -65,9 +66,9 @@ impl Runnable for BrewBackupCmd {
             .unwrap_or(false);
 
         if self.no_deps {
-            if no_deps {
+            if !no_deps {
                 log_info!("Setting no_deps to true in config for later reads.",);
-                brew_tbl["no_deps"] = value(false);
+                brew_tbl["no_deps"] = value(true);
             } else {
                 log_info!("no_deps already found true in configuration, so not setting.",);
             }

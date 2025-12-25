@@ -26,6 +26,7 @@ impl Runnable for UnapplyCmd {
         RunnableInvokeRules {
             do_config_autosync: true,
             require_sudo: false,
+            respect_lock: true,
         }
     }
 

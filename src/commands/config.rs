@@ -24,12 +24,11 @@ impl Runnable for ConfigCmd {
         RunnableInvokeRules {
             do_config_autosync: false,
             require_sudo: false,
+            respect_lock: true,
         }
     }
 
     async fn run(&self, ctx: &AppContext) -> Result<()> {
-        ctx.config.load(true).await?;
-
         if should_dry_run() {
             log_dry!("Would display config from {:?}", ctx.config.path());
             return Ok(());
