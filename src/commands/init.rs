@@ -26,12 +26,15 @@ impl Runnable for InitCmd {
 
     async fn run(&self, ctx: &AppContext) -> Result<()> {
         if ctx.config.is_loadable() {
+            ctx.config.load(true).await?;
+
             log_warn!(
-                "Configuration file already exists at {:?}",
+                "Configuration file already exists at: {:?}",
                 ctx.config.path()
             );
+
             if !confirm("Do you want to overwrite it?") {
-                bail!("Configuration init aborted.")
+                bail!("init has been aborted.")
             }
         }
 

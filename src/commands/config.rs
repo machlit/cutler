@@ -28,7 +28,7 @@ impl Runnable for ConfigCmd {
     }
 
     async fn run(&self, ctx: &AppContext) -> Result<()> {
-        let _ = ctx.config.load(true).await?;
+        ctx.config.load(true).await?;
 
         if should_dry_run() {
             log_dry!("Would display config from {:?}", ctx.config.path());
