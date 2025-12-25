@@ -33,7 +33,6 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
       - uses: mozilla-actions/sccache-action@v0.0.9
-      - run: sccache --show-stats || true
 
       - name: Install deps before command run
         run: brew install cargo-audit cargo-deny
@@ -48,3 +47,5 @@ jobs:
         run: |
           cargo test --quiet
           cargo fmt --all -- --check
+
+      - run: sccache --show-stats || true

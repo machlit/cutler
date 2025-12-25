@@ -31,10 +31,11 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
       - uses: mozilla-actions/sccache-action@v0.0.9
-      - run: sccache --show-stats || true
 
       - name: Build release artifact
         run: cargo build --release --quiet --locked
+
+      - run: sccache --show-stats || true
 
       - name: Package release
         run: |
