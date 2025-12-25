@@ -40,12 +40,11 @@ async fn main() {
     let rules = runnable.get_invoke_rules();
 
     // do lock-check and terminate if true
-    if rules.respect_lock {
-        if ctx.config.is_locked().await {
+    if rules.respect_lock
+        && ctx.config.is_locked().await {
             log_err!("Config is locked. Run `cutler config unlock` to unlock.");
             exit(1);
         }
-    }
 
     // run remote-sync if command respects
     if args.no_sync {
