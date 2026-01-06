@@ -89,18 +89,6 @@ cargo install cutler
 mise use -g cargo:cutler
 ```
 
-## Goals
-
-The universal goal is simple - provide a reliable way to automate the Mac setup so that you don't have to overthink about it. This consists of the following:
-
-- Reliable restoration of system preferences.
-- Reliable restoration of apps/tools using some sort of backend.
-- Customizability and authority over certain commands and other stuff.
-- Backup and restoration features for advanced things such as fonts, App Store apps.
-- ... and more which aren't noted here.
-
-These are all possible features cutler needs to stabilize in order to achieve a v1 release for now.
-
 ## Contributing
 
 View the [Contribution Guidelines](https://machlit.github.io/cutler/guidelines/contributing.html) to learn more about contributing to cutler. It also contains resources such as code snippets to make your contribution workflow easier.
