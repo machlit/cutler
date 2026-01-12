@@ -15,7 +15,7 @@ categories = ["command-line-utilities"]
 toml = "0.9"
 toml_edit = "0.24"
 clap = { version = "4", features = ["derive"] }
-clap_complete = "4.5.64"
+clap_complete = "4.5.65"
 serde_json = "1.0.148"
 serde = { version = "1.0", features = ["derive"] }
 semver = "1.0.27"
