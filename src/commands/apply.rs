@@ -105,7 +105,8 @@ impl Runnable for ApplyCmd {
 
         // parse + flatten domains
         let digest = get_digest(ctx.config.path())?;
-        let config_system_domains = collect(&ctx.config).await?;
+        let doc = ctx.config.load_as_mut().await?;
+        let config_system_domains = collect(&doc).await?;
 
         // load the old snapshot (if any), otherwise create a new instance
         let mut is_bad_snap: bool = false;

@@ -38,7 +38,8 @@ impl Runnable for StatusCmd {
     }
 
     async fn run(&self, ctx: &AppContext) -> Result<()> {
-        let domains = collect(&ctx.config).await?;
+        let doc = ctx.config.load_as_mut().await?;
+        let domains = collect(&doc).await?;
 
         // flatten all settings into a list
         let entries: Vec<(String, String, toml::Value)> = domains

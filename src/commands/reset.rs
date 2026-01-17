@@ -38,7 +38,8 @@ impl Runnable for ResetCmd {
             return Ok(());
         }
 
-        let config_system_domains = collect(&ctx.config).await?;
+        let doc = ctx.config.load_as_mut().await?;
+        let config_system_domains = collect(&doc).await?;
 
         for (dom, table) in config_system_domains {
             for (key, _) in table {
