@@ -1,8 +1,10 @@
 # custom
 /target
+/release
+
 .DS_Store
+
 *.zip
-defaults-rs
 
 # mdbook
 book/book
