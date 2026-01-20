@@ -105,7 +105,8 @@ impl Runnable for ApplyCmd {
 
         // parse + flatten domains
         let digest = get_digest(ctx.config.path())?;
-        let config_system_domains = collect(&ctx.config).await?;
+        let doc = ctx.config.load_as_mut().await?;
+        let config_system_domains = collect(&doc).await?;
 
         // load the old snapshot (if any), otherwise create a new instance
         let mut is_bad_snap: bool = false;
@@ -140,8 +141,8 @@ impl Runnable for ApplyCmd {
             .collect();
 
         // system-specific domains
-        for (dom, table) in config_system_domains {
-            for (key, toml_value) in table {
+        for (dom, keyval_table) in config_system_domains {
+            for (key, toml_value) in keyval_table {
                 let (eff_dom, eff_key) = core::get_effective_sys_domain_key(&dom, &key);
 
                 if !self.no_dom_check

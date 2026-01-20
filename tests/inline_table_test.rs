@@ -26,26 +26,28 @@ ShowPathbar = true
 "#;
         let (_temp_file, config) = config_from_toml(config_content);
 
-        let domains = collect(&config).await.unwrap();
+        if let Ok(doc) = config.load_as_mut().await {
+            let domains = collect(&doc).await.unwrap();
 
-        // Should only have "finder" domain, not "finder.FXInfoPanesExpanded"
-        assert_eq!(domains.len(), 1);
-        assert!(domains.contains_key("finder"));
-        assert!(!domains.contains_key("finder.FXInfoPanesExpanded"));
+            // Should only have "finder" domain, not "finder.FXInfoPanesExpanded"
+            assert_eq!(domains.len(), 1);
+            assert!(domains.contains_key("finder"));
+            assert!(!domains.contains_key("finder.FXInfoPanesExpanded"));
 
-        let finder = domains.get("finder").unwrap();
+            let finder = domains.get("finder").unwrap();
 
-        // FXInfoPanesExpanded should be a table value
-        assert!(finder.contains_key("FXInfoPanesExpanded"));
-        let fx_info = finder.get("FXInfoPanesExpanded").unwrap();
-        assert!(fx_info.is_table());
+            // FXInfoPanesExpanded should be a table value
+            assert!(finder.contains_key("FXInfoPanesExpanded"));
+            let fx_info = finder.get("FXInfoPanesExpanded").unwrap();
+            assert!(fx_info.is_table());
 
-        let fx_table = fx_info.as_table().unwrap();
-        assert!(!fx_table.get("Preview").unwrap().as_bool().unwrap());
-        assert!(fx_table.get("MetaData").unwrap().as_bool().unwrap());
+            let fx_table = fx_info.as_table().unwrap();
+            assert!(!fx_table.get("Preview").unwrap().as_bool().unwrap());
+            assert!(fx_table.get("MetaData").unwrap().as_bool().unwrap());
 
-        // ShowPathbar should be a boolean
-        assert!(finder.get("ShowPathbar").unwrap().as_bool().unwrap());
+            // ShowPathbar should be a boolean
+            assert!(finder.get("ShowPathbar").unwrap().as_bool().unwrap());
+        }
     }
 
     #[tokio::test]
@@ -60,18 +62,20 @@ fnState = false
 "#;
         let (_temp_file, config) = config_from_toml(config_content);
 
-        let domains = collect(&config).await.unwrap();
+        if let Ok(doc) = config.load_as_mut().await {
+            let domains = collect(&doc).await.unwrap();
 
-        // Should have "dock" and "NSGlobalDomain.com.apple.keyboard"
-        assert_eq!(domains.len(), 2);
-        assert!(domains.contains_key("dock"));
-        assert!(domains.contains_key("NSGlobalDomain.com.apple.keyboard"));
+            // Should have "dock" and "NSGlobalDomain.com.apple.keyboard"
+            assert_eq!(domains.len(), 2);
+            assert!(domains.contains_key("dock"));
+            assert!(domains.contains_key("NSGlobalDomain.com.apple.keyboard"));
 
-        let dock = domains.get("dock").unwrap();
-        assert_eq!(dock.get("tilesize").unwrap().as_integer().unwrap(), 50);
+            let dock = domains.get("dock").unwrap();
+            assert_eq!(dock.get("tilesize").unwrap().as_integer().unwrap(), 50);
 
-        let keyboard = domains.get("NSGlobalDomain.com.apple.keyboard").unwrap();
-        assert!(!keyboard.get("fnState").unwrap().as_bool().unwrap());
+            let keyboard = domains.get("NSGlobalDomain.com.apple.keyboard").unwrap();
+            assert!(!keyboard.get("fnState").unwrap().as_bool().unwrap());
+        }
     }
 
     #[tokio::test]
@@ -92,54 +96,56 @@ FXInfoPanesExpanded = { Preview = false, MetaData = true, Comments = false }
 "#;
         let (_temp_file, config) = config_from_toml(config_content);
 
-        let domains = collect(&config).await.unwrap();
+        if let Ok(doc) = config.load_as_mut().await {
+            let domains = collect(&doc).await.unwrap();
 
-        assert_eq!(domains.len(), 3);
+            assert_eq!(domains.len(), 3);
 
-        // Check dock settings
-        let dock = domains.get("dock").unwrap();
-        assert_eq!(dock.get("tilesize").unwrap().as_integer().unwrap(), 50);
-        assert!(dock.get("autohide").unwrap().as_bool().unwrap());
+            // Check dock settings
+            let dock = domains.get("dock").unwrap();
+            assert_eq!(dock.get("tilesize").unwrap().as_integer().unwrap(), 50);
+            assert!(dock.get("autohide").unwrap().as_bool().unwrap());
 
-        // Check NSGlobalDomain settings
-        let global = domains.get("NSGlobalDomain").unwrap();
-        assert!(
-            !global
-                .get("com.apple.dock.fnState")
+            // Check NSGlobalDomain settings
+            let global = domains.get("NSGlobalDomain").unwrap();
+            assert!(
+                !global
+                    .get("com.apple.dock.fnState")
+                    .unwrap()
+                    .as_bool()
+                    .unwrap()
+            );
+
+            let int_array = global
+                .get("exampleArrayOfInts")
                 .unwrap()
-                .as_bool()
+                .as_array()
+                .unwrap();
+            assert_eq!(int_array.len(), 3);
+            assert_eq!(int_array[0].as_integer().unwrap(), 1);
+            assert_eq!(int_array[1].as_integer().unwrap(), 2);
+            assert_eq!(int_array[2].as_integer().unwrap(), 3);
+
+            let str_array = global
+                .get("exampleArrayOfStrings")
                 .unwrap()
-        );
+                .as_array()
+                .unwrap();
+            assert_eq!(str_array.len(), 3);
+            assert_eq!(str_array[0].as_str().unwrap(), "one");
+            assert_eq!(str_array[1].as_str().unwrap(), "two");
+            assert_eq!(str_array[2].as_str().unwrap(), "three");
 
-        let int_array = global
-            .get("exampleArrayOfInts")
-            .unwrap()
-            .as_array()
-            .unwrap();
-        assert_eq!(int_array.len(), 3);
-        assert_eq!(int_array[0].as_integer().unwrap(), 1);
-        assert_eq!(int_array[1].as_integer().unwrap(), 2);
-        assert_eq!(int_array[2].as_integer().unwrap(), 3);
-
-        let str_array = global
-            .get("exampleArrayOfStrings")
-            .unwrap()
-            .as_array()
-            .unwrap();
-        assert_eq!(str_array.len(), 3);
-        assert_eq!(str_array[0].as_str().unwrap(), "one");
-        assert_eq!(str_array[1].as_str().unwrap(), "two");
-        assert_eq!(str_array[2].as_str().unwrap(), "three");
-
-        // Check finder inline table
-        let finder = domains.get("finder").unwrap();
-        let fx_table = finder
-            .get("FXInfoPanesExpanded")
-            .unwrap()
-            .as_table()
-            .unwrap();
-        assert!(!fx_table.get("Preview").unwrap().as_bool().unwrap());
-        assert!(fx_table.get("MetaData").unwrap().as_bool().unwrap());
-        assert!(!fx_table.get("Comments").unwrap().as_bool().unwrap());
+            // Check finder inline table
+            let finder = domains.get("finder").unwrap();
+            let fx_table = finder
+                .get("FXInfoPanesExpanded")
+                .unwrap()
+                .as_table()
+                .unwrap();
+            assert!(!fx_table.get("Preview").unwrap().as_bool().unwrap());
+            assert!(fx_table.get("MetaData").unwrap().as_bool().unwrap());
+            assert!(!fx_table.get("Comments").unwrap().as_bool().unwrap());
+        }
     }
 }

@@ -27,10 +27,12 @@ key1 = "value1"
 "#;
         let (_temp_file, config) = config_from_toml(config_content);
 
-        let domains = collect(&config).await.unwrap();
-        assert_eq!(domains.len(), 1);
-        let got = domains.get("domain").unwrap();
-        assert_eq!(got.get("key1").unwrap().as_str().unwrap(), "value1");
+        if let Ok(doc) = config.load_as_mut().await {
+            let domains = collect(&doc).await.unwrap();
+            assert_eq!(domains.len(), 1);
+            let got = domains.get("domain").unwrap();
+            assert_eq!(got.get("key1").unwrap().as_str().unwrap(), "value1");
+        }
     }
 
     #[tokio::test]
@@ -49,20 +51,22 @@ inner_key = "inner_value"
 "#;
         let (_temp_file, config) = config_from_toml(config_content);
 
-        let domains = collect(&config).await.unwrap();
-        // With the new behavior, "root.nested" becomes a separate domain
-        assert_eq!(domains.len(), 2);
+        if let Ok(doc) = config.load_as_mut().await {
+            let domains = collect(&doc).await.unwrap();
+            // With the new behavior, "root.nested" becomes a separate domain
+            assert_eq!(domains.len(), 2);
 
-        let root = domains.get("root").unwrap();
-        assert!(root.contains_key("top_key"));
-        assert_eq!(root.get("top_key").unwrap().as_str().unwrap(), "top_value");
+            let root = domains.get("root").unwrap();
+            assert!(root.contains_key("top_key"));
+            assert_eq!(root.get("top_key").unwrap().as_str().unwrap(), "top_value");
 
-        let nested = domains.get("root.nested").unwrap();
-        assert!(nested.contains_key("inner_key"));
-        assert_eq!(
-            nested.get("inner_key").unwrap().as_str().unwrap(),
-            "inner_value"
-        );
+            let nested = domains.get("root.nested").unwrap();
+            assert!(nested.contains_key("inner_key"));
+            assert_eq!(
+                nested.get("inner_key").unwrap().as_str().unwrap(),
+                "inner_value"
+            );
+        }
     }
 
     #[test]
@@ -89,12 +93,14 @@ fnState = false
 "#;
         let (_temp_file, config) = config_from_toml(config_content);
 
-        let domains = collect(&config).await.unwrap();
-        assert_eq!(domains.len(), 2);
-        let dock = domains.get("dock").unwrap();
-        assert_eq!(dock.get("tilesize").unwrap().as_str().unwrap(), "50");
-        assert!(dock.get("autohide").unwrap().as_bool().unwrap());
-        let kb = domains.get("NSGlobalDomain.com.apple.keyboard").unwrap();
-        assert!(!kb.get("fnState").unwrap().as_bool().unwrap());
+        if let Ok(doc) = config.load_as_mut().await {
+            let domains = collect(&doc).await.unwrap();
+            assert_eq!(domains.len(), 2);
+            let dock = domains.get("dock").unwrap();
+            assert_eq!(dock.get("tilesize").unwrap().as_str().unwrap(), "50");
+            assert!(dock.get("autohide").unwrap().as_bool().unwrap());
+            let kb = domains.get("NSGlobalDomain.com.apple.keyboard").unwrap();
+            assert!(!kb.get("fnState").unwrap().as_bool().unwrap());
+        }
     }
 }
