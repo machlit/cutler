@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-
 use crate::cli::atomic::should_dry_run;
 use crate::config::LoadedConfig;
 use crate::util::logging::{BOLD, RESET};

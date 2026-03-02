@@ -7,7 +7,6 @@
 #### Setup automation for your Mac
 
 [![Crates.io Downloads](https://img.shields.io/crates/d/cutler?style=social&logo=Rust)](https://crates.io/crates/cutler)
-[![Rust Tests](https://github.com/machlit/cutler/actions/workflows/tests.yml/badge.svg)](https://github.com/machlit/cutler/actions/workflows/tests.yml)
 
 Pre-built binaries support **macOS Big Sur (11.0) or later** versions.
 

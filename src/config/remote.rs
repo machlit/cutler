@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-
 use anyhow::{Context, Result, bail};
 use reqwest::Client;
 use tokio::fs;

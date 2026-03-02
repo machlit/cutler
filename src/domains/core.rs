@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-
 use anyhow::Result;
 use defaults_rs::{Domain, PrefValue, Preferences};
 use std::collections::{HashMap, HashSet};

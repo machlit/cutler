@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-
 use crate::commands::{Runnable, RunnableInvokeRules};
 
 use crate::context::AppContext;

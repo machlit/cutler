@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-
 pub mod autosync;
 pub mod brew;
 pub mod cli;

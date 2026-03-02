@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-
 use crate::brew::types::{BrewDiff, BrewListType};
 use crate::brew::xcode::ensure_xcode_clt;
 use crate::cli::atomic::should_dry_run;

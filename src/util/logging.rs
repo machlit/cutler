@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-
 //! Logging module for cutler.
 //!
 //! Use the log_*! macros for pretty-printing text inside cutler.

@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-
 use std::fmt::Display;
 
 /// Represents the type of software to list in Homebrew.

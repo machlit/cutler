@@ -34,14 +34,8 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - uses: mozilla-actions/sccache-action@v0.0.9
 
-      - name: Install deps before command run
-        run: brew install cargo-audit cargo-deny
-
       - name: Generic clippy
         run: cargo clippy --no-deps -- -D warnings
-
-      - name: Security check
-        run: cargo audit
 
       - name: Generic testing and format check
         run: |

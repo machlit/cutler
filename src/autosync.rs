@@ -1,5 +1,3 @@
-// SPDX-License-Identifier: MIT OR Apache-2.0
-
 use crate::config::Config;
 use crate::config::remote::RemoteConfigManager;
 use crate::{log_err, log_info, log_warn};
