@@ -33,4 +33,3 @@
 # References
 
 - [Resources](./references/resources.md)
-- [License](./references/license.md)

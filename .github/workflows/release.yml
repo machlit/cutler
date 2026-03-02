@@ -42,10 +42,9 @@ jobs:
           mkdir -p release/bin release/man/man1
           cp target/aarch64-apple-darwin/release/cutler release/bin/
           cp man/man1/cutler.1 release/man/man1/
-          cp LICENSE-APACHE release/
-          cp LICENSE-MIT release/
+          cp LICENSE release/
           cp README.md release/
-          tar -C release -czf $FILE_NAME bin man README.md LICENSE-APACHE LICENSE-MIT
+          tar -C release -czf $FILE_NAME bin man README.md LICENSE
 
       - name: Set release body
         id: release_body

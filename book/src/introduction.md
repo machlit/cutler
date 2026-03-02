@@ -31,6 +31,10 @@ There are some additional links that you may want to keep tabs on:
 - [Website](https://machlit.github.io/cutler)
 - [crates.io](https://crates.io/crates/cutler)
 
+## License
+
+Well, if you haven't come across the license already, well, it's licensed under [GNU GPL v3](https://github.com/machlit/cutler/blob/master/LICENSE).
+
 ## Let's Go!
 
 To get started with your cutlery, move to the next page.
