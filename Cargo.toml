@@ -1,13 +1,13 @@
 [package]
 name = "cutler"
-version = "0.19.6"
+version = "0.19.7"
 edition = "2024"
 description = "Powerful, declarative settings management for your Mac, with speed."
 homepage = "https://machlit.github.io/cutler"
 repository = "https://github.com/machlit/cutler"
-keywords = ["macos", "macos-automation", "cutler", "declarative-settings"]
+keywords = ["macos", "macos-automation", "cutler", "declarative-config", "declarative-settings", "nix"]
 readme = "README.md"
-license = "MIT OR Apache-2.0"
+license = "GPL-3.0-or-later"
 authors = ["Machlit", "Anindya Shiddhartha <shiddhartha@tuta.io>"]
 categories = ["command-line-utilities"]
 
