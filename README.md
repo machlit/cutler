@@ -94,7 +94,4 @@ View the [Contribution Guidelines](https://machlit.github.io/cutler/guidelines/c
 
 ## License
 
-This project is permissively licensed and free forever. See the license files mentioned below for the details:
-
-- Apache Software License 2.0 [(LICENSE-APACHE)](https://github.com/machlit/cutler/blob/master/LICENSE-APACHE)
-- MIT License [(LICENSE-MIT)](https://github.com/machlit/cutler/blob/master/LICENSE-MIT)
+Proudly licensed under: [GNU GPL v3](https://github.com/machlit/cutler/blob/master/LICENSE)
