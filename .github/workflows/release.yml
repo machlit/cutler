@@ -30,7 +30,7 @@ jobs:
           override: true
 
       - uses: Swatinem/rust-cache@v2
-      - uses: mozilla-actions/sccache-action@v0.0.9
+      - uses: mozilla-actions/sccache-action@v0.0.10
 
       - name: Build release artifact
         run: cargo build --release --quiet --locked
