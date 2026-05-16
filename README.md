@@ -12,6 +12,9 @@ Pre-built binaries support **macOS Big Sur (11.0) or later** versions.
 
 </div>
 
+> [!WARNING]
+> Still under development. **Expect breaking changes before v1.**
+
 ## Quick Start
 
 ```bash
