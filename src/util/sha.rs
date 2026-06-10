@@ -21,6 +21,7 @@ pub fn get_digest(path: &Path) -> Result<String> {
         hasher.update(&buffer[..n]);
     }
 
-    let result = hasher.finalize();
-    Ok(format!("{result:x}"))
+    let digest = hasher.finalize();
+
+    Ok(digest.iter().map(|b| format!("{:02x}", b)).collect())
 }
