@@ -52,11 +52,10 @@ Sensitive actions (e.g. installing) are currently outsourced to remain as close 
 
 cutler is still in development and changes in functionality may be common during this stage.
 
-## Useful Links
+## Table of Contents
 
 - [Resources](#resources)
 - [Installation](#installation)
-- [Goals](#goals)
 - [Contributing](#contributing)
 - [License](#license)
 
