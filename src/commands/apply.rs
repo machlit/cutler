@@ -75,7 +75,7 @@ struct PreferenceJob {
 
 #[async_trait]
 impl Runnable for ApplyCmd {
-    fn get_invoke_rules(&self) -> RunnableInvokeRules {
+    fn set_invoke_rules(&self) -> RunnableInvokeRules {
         RunnableInvokeRules {
             do_config_autosync: true,
             require_sudo: false,

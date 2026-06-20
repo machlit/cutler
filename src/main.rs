@@ -7,7 +7,6 @@ use cutler::cli::Args;
 use cutler::cli::atomic::{
     set_accept_all, set_dry_run, set_no_restart_services, set_quiet, set_verbose,
 };
-use cutler::commands::Runnable;
 use cutler::context::AppContextManager;
 use cutler::util::sudo::{run_with_noroot, run_with_root};
 use cutler::{log_err, log_info};
@@ -34,8 +33,7 @@ async fn main() {
     };
 
     // retrieve Runnable from command instance
-    let runnable: &dyn Runnable = args.command.as_runnable();
-    let rules = runnable.get_invoke_rules();
+    let rules = args.command.get_invoke_rules();
 
     // do lock-check and terminate if true
     if rules.respect_lock && ctx.config.is_locked().await {
@@ -60,7 +58,7 @@ async fn main() {
         exit(1);
     }
 
-    let result = runnable.run(&ctx).await;
+    let result = args.command.run(&ctx).await;
 
     if let Err(err) = result {
         log_err!("{err}");

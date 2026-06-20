@@ -15,7 +15,7 @@ pub struct InitCmd;
 
 #[async_trait]
 impl Runnable for InitCmd {
-    fn get_invoke_rules(&self) -> RunnableInvokeRules {
+    fn set_invoke_rules(&self) -> RunnableInvokeRules {
         RunnableInvokeRules {
             do_config_autosync: false,
             require_sudo: false,

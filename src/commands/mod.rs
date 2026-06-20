@@ -33,7 +33,7 @@ pub use status::StatusCmd;
 pub use unapply::UnapplyCmd;
 pub use unlock::UnlockCmd;
 
-use crate::context::AppContext;
+use crate::{cli::Command, context::AppContext};
 
 /// A common trait for cutler commands.
 ///
@@ -41,12 +41,67 @@ use crate::context::AppContext;
 /// src/cli/args.rs, the trait is used for passing down the same callable.
 #[async_trait]
 pub trait Runnable {
-    /// Run the command. The result is implemented using `anyhow::Result` since cutler's internal functions
-    /// often propagate an error upto the root error handler.
+    /// The primary run function for the command.
     async fn run(&self, ctx: &AppContext) -> Result<()>;
 
-    /// Returns a set of governing rules for a Runnable to be run properly.
-    fn get_invoke_rules(&self) -> RunnableInvokeRules;
+    /// Set governing rules for the runnable command.
+    fn set_invoke_rules(&self) -> RunnableInvokeRules;
+}
+
+impl Command {
+    pub async fn run(&self, ctx: &AppContext) -> Result<()> {
+        match self {
+            Command::Apply(apply_cmd) => apply_cmd.run(ctx).await,
+            Command::Cookbook(cookbook_cmd) => cookbook_cmd.run(ctx).await,
+            Command::Exec(exec_cmd) => exec_cmd.run(ctx).await,
+            Command::Init(init_cmd) => init_cmd.run(ctx).await,
+            Command::Lock(lock_cmd) => lock_cmd.run(ctx).await,
+            Command::Unlock(unlock_cmd) => unlock_cmd.run(ctx).await,
+            Command::Unapply(unapply_cmd) => unapply_cmd.run(ctx).await,
+            Command::Reset(reset_cmd) => reset_cmd.run(ctx).await,
+            Command::Status(status_cmd) => status_cmd.run(ctx).await,
+            Command::Brew { command } => match command {
+                crate::cli::args::BrewSubcmd::Backup(brew_backup_cmd) => {
+                    brew_backup_cmd.run(ctx).await
+                }
+                crate::cli::args::BrewSubcmd::Install(brew_install_cmd) => {
+                    brew_install_cmd.run(ctx).await
+                }
+            },
+            Command::Config(config_cmd) => config_cmd.run(ctx).await,
+            Command::CheckUpdate(check_update_cmd) => check_update_cmd.run(ctx).await,
+            Command::SelfUpdate(self_update_cmd) => self_update_cmd.run(ctx).await,
+            Command::Completion(completion_cmd) => completion_cmd.run(ctx).await,
+            Command::Fetch(fetch_cmd) => fetch_cmd.run(ctx).await,
+        }
+    }
+
+    pub fn get_invoke_rules(&self) -> RunnableInvokeRules {
+        match self {
+            Command::Apply(apply_cmd) => apply_cmd.set_invoke_rules(),
+            Command::Cookbook(cookbook_cmd) => cookbook_cmd.set_invoke_rules(),
+            Command::Exec(exec_cmd) => exec_cmd.set_invoke_rules(),
+            Command::Init(init_cmd) => init_cmd.set_invoke_rules(),
+            Command::Lock(lock_cmd) => lock_cmd.set_invoke_rules(),
+            Command::Unlock(unlock_cmd) => unlock_cmd.set_invoke_rules(),
+            Command::Unapply(unapply_cmd) => unapply_cmd.set_invoke_rules(),
+            Command::Reset(reset_cmd) => reset_cmd.set_invoke_rules(),
+            Command::Status(status_cmd) => status_cmd.set_invoke_rules(),
+            Command::Brew { command } => match command {
+                crate::cli::args::BrewSubcmd::Backup(brew_backup_cmd) => {
+                    brew_backup_cmd.set_invoke_rules()
+                }
+                crate::cli::args::BrewSubcmd::Install(brew_install_cmd) => {
+                    brew_install_cmd.set_invoke_rules()
+                }
+            },
+            Command::Config(config_cmd) => config_cmd.set_invoke_rules(),
+            Command::CheckUpdate(check_update_cmd) => check_update_cmd.set_invoke_rules(),
+            Command::SelfUpdate(self_update_cmd) => self_update_cmd.set_invoke_rules(),
+            Command::Completion(completion_cmd) => completion_cmd.set_invoke_rules(),
+            Command::Fetch(fetch_cmd) => fetch_cmd.set_invoke_rules(),
+        }
+    }
 }
 
 /// Struct to declare execution rules for the Runnable trait.
