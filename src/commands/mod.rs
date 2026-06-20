@@ -76,6 +76,7 @@ impl Command {
         }
     }
 
+    #[must_use] 
     pub fn get_invoke_rules(&self) -> RunnableInvokeRules {
         match self {
             Command::Apply(apply_cmd) => apply_cmd.set_invoke_rules(),
